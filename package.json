@@ -1,0 +1,30 @@
+{
+  "name": "miscontactos",
+  "version": "1.0.0",
+  "description": "Localiza a tu cliente para llamarle, enviarle un e-mail, whatsapp o sms.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sw-precache": "sw-precache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tharunShiv/stick-it-notes.git"
+  },
+  "author": {
+    "name": "GestionPYME",
+    "email": "info@miscontactos.es",
+    "url": "https://miscontactos.es"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/tharunShiv/stick-it-notes/issues"
+  },
+  "homepage": "https://miscontactos.es/",
+  "dependencies": {
+    "semver": "^7.3.5",
+    "sw-precache": "^5.2.1",
+    "trim-newlines": "^4.0.2",
+    "workbox-window": "^6.5.1"
+  }
+}

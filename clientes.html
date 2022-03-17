@@ -1,0 +1,3438 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Clientes</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js">"</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+	<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+	<script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+
+  	<script src="libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="logo.ico">
+
+<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after  { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    } 
+
+    @media (min-width: 993px) {
+        #aceptar2:after  { content: '  Guardar';}
+        #cancelar2:after { content: '  Cancelar';}
+    } 
+
+    @media (min-width: 993px) {
+        #aceptar3:after  { content: '  Guardar';}
+        #cancelar3:after { content: '  Cancelar';}
+    }          
+
+    .success {
+            background: #92c5fc;
+            font-weight: bold;
+    }   
+
+    .success1 {
+            background: #92c5fc;
+            font-weight: bold;
+    } 
+
+    .success2 {
+            background: #92c5fc;
+            font-weight: bold;
+    } 
+
+    .success3 {
+            background: #92c5fc;
+            font-weight: bold;
+    }            
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+      
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; }
+
+
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+	  visibility: hidden; /* Hidden by default. Visible on click */
+	  min-width: 250px; /* Set a default minimum width */
+	  margin-left: -125px; /* Divide value of min-width by 2 */
+	  background-color: #333; /* Black background color */
+	  color: #fff; /* White text color */
+	  text-align: center; /* Centered text */
+	  border-radius: 2px; /* Rounded borders */
+	  padding: 16px; /* Padding */
+	  position: fixed; /* Sit on top of the screen */
+	  z-index: 1; /* Add a z-index if needed */
+	  left: 50%; /* Center the snackbar */
+	  bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+	  visibility: visible; /* Show the snackbar */
+	  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+	  However, delay the fade out process for 2.5 seconds */
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}     
+
+</style>
+
+<script>
+
+
+	function ocultarBotones(e) {
+		abrirGruposClientes.style.display 			= e;
+		abrirZonas.style.display 					= e;
+		abrirCtasRemesas.style.display 				= e;
+		abrirAgencias.style.display 				= e;
+		abrirFormasPago.style.display 				= e;
+		abrirDivisas.style.display 					= e;
+		abrirTiposAtencion.style.display 			= e;
+		abrirAgentes.style.display 					= e;
+
+  		nuevoContactoClie1.style.display 			= e;
+		nuevoContactoClie2.style.display 			= e;
+		nuevoDirEnvio1.style.display 				= e;
+		nuevoDirEnvio2.style.display 				= e;
+		nuevoContactoComercial1.style.display 		= e;
+		nuevoContactoComercial2.style.display 		= e;
+
+  		editarContactoClie1.style.display 			= e;
+		editarContactoClie2.style.display 			= e;
+		editarDirEnvio1.style.display 				= e;
+		editarDirEnvio2.style.display 				= e;
+		editarContactoComercial1.style.display 		= e;
+		editarContactoComercial2.style.display 		= e;
+
+  		eliminarContactoClie1.style.display 		= e;
+		eliminarContactoClie2.style.display 		= e;
+		eliminarDirEnvio1.style.display 			= e;
+		eliminarDirEnvio2.style.display 			= e;
+		eliminarContactoComercial1.style.display 	= e;
+		eliminarContactoComercial2.style.display 	= e;		
+	}
+
+
+</script>
+
+
+
+  </head>
+  <body class="bg-light" onunload="descargar()">
+
+  <script>
+
+  	// gestión ventanas. Es la función que se ejecutar en onunload de body
+  	function descargar() { despuesDeCerrarVentana('nExtClientes', 'clientes'); }
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+
+    	compProcedencia();
+    	
+
+    	// gestión ventanas
+    	despuesDeAbrirVentana('nExtClientes', 'clientes');
+
+		$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+
+		permisosVentana('clientes');
+
+    	window.decImpDivPred 				= localStorage.getItem('decImpDivPred');
+    	window.abrevDivPred 				= localStorage.getItem('abrevDivPred');
+
+    	window.nombreC 						= '';
+    	window.numD							= '';
+    	window.FechaHoraCC					= '';
+		window.contactosEliminar 			= [];
+		window.dirEnviosEliminar 			= [];
+		window.contactosComercialesEliminar = [];
+
+        // Si es IGIC Canarias. Tiene que estar antes de Tooltip
+        let esIGIC = localStorage.getItem('igicPD');
+        if (esIGIC == -1) {
+            etIVA.innerHTML   = 'Régimen IGIC';
+            iva.title         = 'Régimen de IGIC';
+        };
+
+        cambiarAltoTabla();
+
+		return false;
+    });
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabClientes');
+		if (window.nExtClientes != 0) { msjDblClic(); }
+		return false;	
+	});	
+
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		barraPaginacion('#tabClientes');
+		
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+	document.addEventListener("backbutton", function(){ }, true);
+
+	function eliminarCliente(){	
+		let formDataE = new FormData();
+		formDataE.append("nform", 'clientes');
+		formDataE.append("codnum", window.idTabClientes);
+		formDataE.append("opcionlistado", 3);
+		async function compAntesDeEliminar() {
+			const compResponseE 	= await fetch('php/comprobar_antes_de_editar_o_eliminar.php', {
+	      		method: 'POST',
+	      		body: 	formDataE
+	    	});
+			const dataE 			= await compResponseE.json();
+			return dataE;
+		}
+		compAntesDeEliminar().then((dataE) => {
+			//alert(dataE);
+			if (dataE == '[object Object]') {
+				let myModalE 		= new bootstrap.Modal(document.getElementById('formEliminarCliente'));
+				myModalE.show();
+				codE.defaultValue 	= dataE.codE;
+				nomE.defaultValue 	= dataE.nomE;
+			} else {
+				document.getElementById('msjClientes').innerText = dataE;
+				let myModal 		= new bootstrap.Modal(document.getElementById('dialogoClientes'));
+				myModal.show();
+			};				
+		}).catch(error => {
+			alert(error.message);
+		});
+        return false;
+	}
+ 
+    function imprimir () {
+        localStorage.setItem("tipoDocImp", 22);
+        var windowObjectImprimir = window.open("imprimir.html", '_blank');
+        windowObjectImprimir.focus();		
+    } 	
+
+    function exportar () {
+        localStorage.setItem("tipoDocExp", 22);
+        var windowObjectExportar = window.open("exportar.html", '_blank');
+        windowObjectExportar.focus();		
+    }
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			 <div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm" id="clie2" title="Nuevo cliente" data-toggle="tooltip" onClick="regTabla('modalCliente', 'opcionCliente', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="clie3" title="Editar cliente" data-toggle="tooltip" onClick="regTabla('modalCliente', 'opcionCliente', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="clie4" title="Eliminar cliente" data-toggle="tooltip" onClick="eliminarCliente()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="clie1" title="Ver cliente" data-toggle="tooltip" onClick="regTabla('modalCliente', 'opcionCliente', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<!-- 
+				<button class="btn btn-success btn-sm dropdown-toggle" type="button" id="MenuEscritorio" data-bs-toggle="dropdown" aria-expanded="false" data-toggle="tooltip" title="Más opciones">
+				<i class="bi bi-list" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="MenuEscritorio">
+			  		<li><a class="dropdown-item" onClick="imprimir()" href="#"><i class="bi bi-printer-fill" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+					<li><a class="dropdown-item" onClick="exportar()" href="#"><i class="bi bi-file-earmark-arrow-down-fill" style="font-size: 1rem; color: currentColor;"></i> Exportar</a></li>
+			  	</ul>
+			  	 -->
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-2 mb-2">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Clientes</a>
+		</div>		
+
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" id="clie2b" onClick="regTabla('modalCliente', 'opcionCliente', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo cliente</a></li>
+				<li><a class="dropdown-item"  id="clie3b" onClick="regTabla('modalCliente', 'opcionCliente', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar cliente</a></li>
+				<li><a class=" dropdown-item" id="clie4b" onClick="eliminarCliente()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar cliente</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalCliente', 'opcionCliente', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver cliente</a></li>				
+
+				<!-- 
+				<li><hr class="dropdown-divider"></li>
+
+			  	<li><a class="dropdown-item" onClick="imprimir()" href="#"><i class="bi bi-printer-fill" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+				<li><a class="dropdown-item" onClick="exportar()" href="#"><i class="bi bi-file-earmark-arrow-down-fill" style="font-size: 1rem; color: currentColor;"></i> Exportar</a></li>
+				 -->
+				
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabClientes')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasClientes', 0)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>
+
+				  	<li><a class="dropdown-item" id="clie5b" href="#" onClick="imprimirTabla('Clientes', tabClientes)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="clie6b"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="clie6b">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+
+
+
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabClientes')">
+					<label class="form-check-label" for="vistaTarjeta"></label>			
+				</div>		
+			</div>
+
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm d-none d-md-block" id="columnasClientes" title="Mostrar columnas" data-toggle="tooltip" onClick="mostrarColumnas('modalColumnasTablasClientes', 0)"><i class="bi-layout-three-columns" style="font-size: 1.4rem; color: currentColor;"></i></button>
+
+				<button class="btn btn-success btn-sm d-none d-md-block" id="clie5" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Clientes', tabClientes)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="clie6" data-bs-toggle="dropdown" aria-expanded="false" data-toggle="tooltip" title="Exportar tabla">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="clie6">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','Clientes','Tabla de Clientes',100, 'tabClientes')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabClientes','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+		<div class="col-auto mt-2 mb-2">
+		  	<div class="btn-group" role="group">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Cerrar" onclick="cerrarVentana('nExtClientes')" data-toggle="tooltip"></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+    opcionesTablaSubmenu.addEventListener('click',  (e) => { 
+        e.stopPropagation();
+    });
+
+    opcionesExportarSubmenu.addEventListener('click',   (e) => { 
+        e.stopPropagation();
+    });
+
+</script>
+
+<div id="snackbar">Doble clic para seleccionar el cliente</div>
+
+<div class="container-fluid">
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabClientes" data-url="./php/datosTabla.php?vista=clientes" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="ccn" data-undefined-text=""
+
+    data-unique-id="ccn"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="true"
+    data-page-size="100"
+    data-show-pagination-switch="false"
+    data-show-extended-pagination="false"
+    data-pagination-parts="['pageList']"
+
+    data-id-table="tabClientes"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="cod"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"    
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+    data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"   
+
+    data-export-data-type="all"
+
+    data-detail-view="true"
+    data-detail-formatter="detailFormatter"
+    data-row-style="rowStyle"
+
+    data-cache="false"
+
+    >
+
+    
+    <thead class="bg-dark text-light">
+        <tr>
+
+  			<th data-field="ccn" data-sortable="false" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false">cod_cliente_n</th>
+			<th data-field="cod" data-sortable="true" data-click-to-select="true" data-switchable="false">Código</th>
+			<th data-field="nom" data-sortable="true" data-click-to-select="true">Nombre</th>
+			<th data-field="noc" data-sortable="true" data-click-to-select="true">Nombre comercial</th>
+			<th data-field="nif" data-sortable="true" data-click-to-select="true">NIF</th>
+			<th data-field="gcd" data-sortable="true" data-click-to-select="true">Grupo clientes</th>
+			<th data-field="zod" data-sortable="true" data-click-to-select="true">Zona</th>
+			<th data-field="tta" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="ttaFormato">Tarifa</th>
+			<th data-field="cpo" data-sortable="true" data-click-to-select="true" data-visible="false">C. P.</th>
+			<th data-field="pob" data-sortable="true" data-click-to-select="true" data-visible="false">Población</th>
+			<th data-field="pro" data-sortable="true" data-click-to-select="true" data-visible="false">Provincia</th>
+			<th data-field="pai" data-sortable="true" data-click-to-select="true" data-visible="false">País</th>
+			<th data-field="per" data-sortable="true" data-click-to-select="true" data-visible="false">Nombre contacto</th>
+			<th data-field="te1" data-sortable="true" data-click-to-select="true" data-visible="false">Teléfono 1</th>
+			<th data-field="te2" data-sortable="true" data-click-to-select="true" data-visible="false">Teléfono 2</th>
+			<th data-field="cor" data-sortable="true" data-click-to-select="true" data-visible="false">E-mail</th>
+			<th data-field="www" data-sortable="true" data-click-to-select="true" data-visible="false">Web</th>
+			<th data-field="age" data-sortable="true" data-click-to-select="true" data-visible="false">Agente comercial</th>
+			<th data-field="por" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="porFormato">Portes</th>
+			<th data-field="foe" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="foeFormato">Forma envío</th>
+			<th data-field="agd" data-sortable="true" data-click-to-select="true" data-visible="false">Agencia envío</th>			
+			<th data-field="din" data-sortable="true" data-click-to-select="true" data-visible="false">Divisa</th>
+			<th data-field="fpd" data-sortable="true" data-click-to-select="true" data-visible="false">Forma de pago</th>
+			<th data-field="fac" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="facFormato">Facturación</th>
+			<th data-field="sub" data-sortable="true" data-click-to-select="true" data-visible="false">Subcuenta</th>
+			<th data-field="reg" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="regFormato">Régimen IVA</th>
+			<th data-field="rec" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="preFormato" data-align="center">Rec Equiv</th>
+			<th data-field="alt" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="fecFormato">Alta</th>
+			<th data-field="blo" data-sortable="true" data-click-to-select="true" data-visible="false" data-formatter="preFormato" data-align="center">Bloqueado</th> 
+
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+
+
+<!-- Comienzo modal form cliente -->
+<div class="modal fade" id="modalCliente" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-xl">
+      	<div class="modal-content">
+	        <!-- Modal Header -->
+	      	<div class="modal-header bg-dark bg-gradient sticky-top">
+	        	<div class="col-6">
+	            	<a class="navbar-brand text-warning" id="exampleModalLabel">Cliente</a>
+	          	</div>
+				<div class="col-auto" style="text-align:right;">
+					<form id="formCliente">
+					<input type="hidden" name="ccn"  id="ccn" value=0>
+					<input type="hidden" name="COD_AGENTE_N" id="COD_AGENTE_N">					
+					<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+					<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+				</div>
+				<div class="col-1" style="text-align:right;">
+			        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+			        </button>
+		        </div>
+			</div>
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+
+				<div class="container-fluid">
+
+					<div class="row align-items-center gx-2 gy-2 mb-3">
+						<div class="col-auto form-floating">
+							<input type="text" name="cod_cliente" id="cod_cliente" value="" placeholder="Código" maxlength=15 size=15 required class="form-control" title="Código del cliente. Máximo 15 caracteres. Si lo deja en blanco, GestiónPYME lo rellenará automáticamente" data-toggle="tooltip">
+							<label for="cod_cliente">Código</label>
+						</div>
+						<div class="col-auto form-floating">
+							<input type="text" name="empresa" id="empresa" value="" placeholder="Nombre" maxlength=60 size=60 required class="form-control w-100" title="Nombre del cliente. Máximo 60 caracteres" data-toggle="tooltip">
+							<label for="empresa">Nombre</label>
+						</div>
+						<div class="col-auto form-floating">
+							<input type="text" name="cif" id="cif" value="" placeholder="NIF" maxlength="35" class="form-control" size=35 title="Número de identificación fiscal del cliente" data-toggle="tooltip">
+							<label for="cif">NIF</label>
+						</div>
+						<div class="col-auto form-floating">
+							<input type="text" name="nombrecomercial" id="nombrecomercial" value="" placeholder="Nombre comercial" maxlength="60" size=60 class="form-control" title="Nombre comercial del cliente" data-toggle="tooltip">
+							<label for="nombrecomercial">Nombre comercial</label>
+						</div>
+						<div class="col-auto form-floating">
+							<input type="date" name="fecha_antiguedad" id="fecha_antiguedad" value="" title="Fecha de alta del cliente" data-toggle="tooltip" required class="form-control">
+							<label for="fecha_antiguedad">Alta</label>
+						</div>	
+			            <div class="col-auto">
+							<div class="form-check form-switch">
+							  	<label class="form-check-label">
+							    	<input type="checkbox" name="Bloqueado" id="Bloqueado" class="form-check-input" value=0 title="Cliente bloqueado" data-toggle="tooltip">Bloqueado</label>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="row align-items-end gx-3 gy-2 mb-4">
+
+						<div class="col-auto">
+							<div class="row align-items-end gx-2 gy-1">
+								<div class="col-auto">
+									<label for="CodigoGrupoCliente">Grupo clientes</label>
+									<div class="input-group">
+										<input type="text" name="CodigoGrupoCliente" id="CodigoGrupoCliente" size=5 maxlength="5" readonly class="form-control" title="Código del grupo del cliente" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirGruposClientes" onclick="nuevaVentana('gruposclientes', 'formCliente', 'CodigoGrupoCliente', 'desGrupoCliente', '')" title="Abrir el fichero de grupos de clientes" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<input type="text" id="desGrupoCliente" size=40 maxlength="40" readonly class="form-control" title="Nombre del grupo del cliente" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>
+
+						<div class="col-auto">
+							<div class="row align-items-end gx-2 gy-1">
+								<div class="col-auto">
+									<label for="zona">Zona</label>
+									<div class="input-group">
+										<input type="text" name="zona" id="zona" size=5 maxlength="5" readonly class="form-control" title="Código de la zona del cliente" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirZonas" onclick="nuevaVentana('zonas', 'formCliente', 'zona', 'zonaDes', '')" title="Abrir el fichero de zonas" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<input type="text" id="zonaDes" size=40 maxlength="40" readonly class="form-control" title="Nombre de la zona del cliente" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+			        <div class="accordion accordion-flush mb-3" id="accordionFlushExample">
+			          <div class="accordion-item">
+			            <h2 class="accordion-header" id="flush-headingOne">
+			              <button class="accordion-button collapsed bg-success bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+			                <i class="p-1 bi bi-shop-window" style="font-size: 1rem; color: currentColor;"></i>  Dirección fiscal
+			              </button>
+			            </h2>
+			            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+			                <div class="accordion-body bg-primary bg-opacity-25">
+
+								<div class="row align-items-end gx-3 gy-3 mb-3">
+									<div class="col-auto form-floating">
+										<input type="text" name="domicilio" id="domicilio" size=50 placeholder="Dirección" maxlength="50" class="form-control" title="Dirección" data-toggle="tooltip">
+										<label for="domicilio">Dirección</label>
+									</div>
+
+									<div class="col-auto form-floating">
+										<input type="text" name="cod_postal" id="cod_postal" size=5 placeholder="C. P." maxlength="5" class="form-control" title="Código postal" data-toggle="tooltip">
+										<label for="cod_postal">C. P.</label>
+									</div>
+
+									<div class="col-auto form-floating">
+										<input type="text" name="poblacion" id="poblacion" size=30 placeholder="Población" maxlength="30" class="form-control" title="Población" data-toggle="tooltip">
+										<label for="poblacion">Población</label>
+									</div>
+
+									<div class="col-auto form-floating">
+										<input type="text" name="provincia" id="provincia" size=30 placeholder="Provincia" maxlength="30" class="form-control" title="Provincia" data-toggle="tooltip">
+										<label for="provincia">Provincia</label>
+									</div>
+
+									<div class="col-auto form-floating">
+										<input type="text" name="pais" id="pais" size=30 placeholder="País" maxlength="30" class="form-control" title="País" data-toggle="tooltip">
+										<label for="pais">País</label>
+									</div>
+
+									<div class="col-auto form-floating">
+										<input type="text" name="persona_contacto" id="persona_contacto" placeholder="Persona de contacto" size=40 maxlength="40" class="form-control" title="Persona de contacto" data-toggle="tooltip">
+										<label for="persona_contacto">Persona de contacto</label>
+									</div>
+
+								</div>
+
+								<div class="row align-items-end gx-3 gy-3 mb-3">
+									<div class="col-auto">
+										<div class="input-group">
+											<input type="text" name="telefono_1" id="telefono_1" placeholder="Teléfono 1" maxlength="25" size=25 class="form-control" title="Teléfono 1" data-toggle="tooltip">
+											<div class="input-group-append">
+												<div class="btn-group">
+			  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1D" data-bs-toggle="dropdown" aria-expanded="false">
+			  										</button>
+			  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1D">
+													    <li><a class="dropdown-item" href="#" id="tel1LlamarD" onclick="hiperenlace(telefono_1.value, 1)"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+													    <li onclick="hiperenlace(telefono_1.value, 3)"><a class="dropdown-item" href="#" id="tel1What
+													    	D"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+													    <li onclick="hiperenlace(telefono_1.value, 2)"><a class="dropdown-item" href="#" id="tel1smsD"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+													</ul>
+			  									</div>
+			  								</div>
+			  							</div>
+									</div>
+
+									<div class="col-auto">
+										<div class="input-group">
+											<input type="text" name="telefono_2" id="telefono_2" placeholder="Teléfono 2" maxlength="25" size=25 class="form-control" title="Teléfono 2" data-toggle="tooltip">
+											<div class="input-group-append">
+												<div class="btn-group">
+			  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2D" data-bs-toggle="dropdown" aria-expanded="false">
+			  										</button>
+			  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2D">
+													    <li><a class="dropdown-item" href="#" id="tel2LlamarD" onclick="hiperenlace(telefono_2.value, 1)"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+													    <li><a class="dropdown-item" href="#" id="tel2WhatD" onclick="hiperenlace(telefono_2.value, 3)"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+													    <li><a class="dropdown-item" href="#" id="tel2smsD" onclick="hiperenlace(telefono_2.value, 2)"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+													</ul>
+			  									</div>
+			  								</div>
+			  							</div>
+									</div>
+
+									<div class="col-auto">
+										<input type="text" name="fax" id="fax" size=25 placeholder="Fax" maxlength="25" class="form-control" title="Fax" data-toggle="tooltip">
+									</div>
+
+								</div>
+
+								<div class="row align-items-end gx-3 gy-3 mb-4">
+
+									<div class="col-auto">
+										<div class="input-group">
+											<input type="email" name="ce" id="ce" placeholder="Correo electrónico" maxlength="50" size=50 class="form-control" title="Correo electrónico" data-toggle="tooltip">
+											<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary ml-auto" id="abrirD" title="Enviar un mensaje" onclick="hiperenlace(ce.value, 5)"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-auto">
+										<div class="input-group">
+											<input type="url" name="www" id="www" placeholder="Dirección web" maxlength="50" size=50 class="form-control" title="Dirección web" data-toggle="tooltip">
+											<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary ml-auto" id="abrirWeb" title="Visitar web" data-toggle="tooltip" onclick="hiperenlace(www.value, 4)"><i class="bi bi-globe2" style="font-size: 1rem; color: currentColor;"></i></button>
+											</div>
+										</div>
+									</div>
+
+								</div>
+
+
+
+<!-- TABLA Contactos -->
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila1">
+		<div class="col-auto d-sm-block d-md-none mt-1 mb-1">
+			<button class="btn btn-dark dropdown-toggle" type="button" id="MenuMovil1" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovilDD">
+
+				<li id="nuevoContactoClie1"><a class="dropdown-item" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo contacto</a></li>
+				<li id="editarContactoClie1"><a class="dropdown-item" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 2)" href="#" ><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar contacto</a></li>
+				<li id="eliminarContactoClie1"><a class=" dropdown-item" onClick="eliminarReg('tabContactos', 'nombreC', 'Nombre', 'contactosEliminar')" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar contacto</a></li>
+				<li><a class=" dropdown-item" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver contacto</a></li>
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenuCC"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenuCC" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabContactos')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+						<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasClientes', 1)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>	
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Contactos de clientes', tabContactos)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenuCC"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenuCC">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json', 'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+
+	  <div class="col-auto d-none d-md-block mt-1 mb-1">
+			<div class="btn-group" role="group">
+
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 1)" title="Nuevo contacto" data-toggle="tooltip" id="nuevoContactoClie2">
+			  <i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 2)" title="Editar contacto" data-toggle="tooltip" id="editarContactoClie2">
+			  <i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="eliminarReg('tabContactos', 'nombreC', 'Nombre', 'contactosEliminar')" title="Eliminar contacto" data-toggle="tooltip" id="eliminarContactoClie2">
+			  <i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoCliente', 'opcionContactosCliente', 4)" title="Ver contacto" data-toggle="tooltip">
+			  <i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-1 mb-1">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Contactos</a>
+		</div>
+
+		<div class="col-auto mt-1 mb-1">
+
+	    <div class="btn-group" role="group">
+	      <div class="form-check form-switch btn-sm d-none d-md-block">
+	        <input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabContactos')">
+	        <label class="form-check-label" for="vistaTarjeta"></label>
+	      </div>
+	    </div>
+
+		<div class="btn-group" role="group">
+			  <a href="#" class="dropdown-item d-none d-md-block" onClick="mostrarColumnas('modalColumnasTablasClientes', 1)" title="Mostrar columnas" data-toggle="tooltip"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i></a>
+				<a href="#" class="dropdown-item d-none d-md-block" onClick="imprimirTabla('Contactos de clientes', tabContactos)" title="Imprimir tabla" data-toggle="tooltip"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i></a>
+				<a href="#" class="dropdown-item dropdown-toggle d-none d-md-block" data-bs-toggle="dropdown" title="Exportar tabla" data-toggle="tooltip"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i></a>
+		  	<ul class="dropdown-menu">
+		  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+				<li><a class="dropdown-item" onClick="exportarTabla('excel','ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">MS-Excel</a></li>
+				<li><a class="dropdown-item" onClick="exportarTabla('csv',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">CSV</a></li>
+				<li><a class="dropdown-item" onClick="exportarTabla('txt',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">TXT</a></li>
+				<li><a class="dropdown-item" onClick="exportarTabla('json', 'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">JSON</a></li>
+				<li><a class="dropdown-item" onClick="exportarTabla('sql',  'ContactosClientes','Tabla de contactos de clientes',100, 'tabContactos')" href="#">SQL</a></li>
+		  	</ul>
+		</div>
+
+		</div>
+		<div class="col-auto align-self-center mt-1 mb-1">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar1" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabContactos','buscar1')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+
+	</div>
+
+
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabContactos" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="Nombre" data-undefined-text=""
+
+            data-unique-id="Nombre"
+            
+            data-search="true"
+            data-show-search-button="false"
+            data-search-selector="#buscar1"
+            data-search-highlight="true"
+            data-search-on-enter-key="false"
+
+            data-side-pagination="client"
+            data-pagination="false"
+            data-show-pagination-switch="false"
+
+            data-id-table="tabContactos"
+
+            data-click-to-select="true"
+            data-single-select="true"
+
+            data-virtual-scroll="false"
+
+            data-icons-prefix="bi"
+            data-icons="icons"
+
+            data-export-data-type="all"
+
+            data-sort-name="Nombre"
+            data-sort-order="asc"
+
+            data-auto-refresh="false"
+            data-show-auto-refresh="false"
+
+            data-detail-view="true"
+            data-detail-formatter="detailFormatter1"    
+            data-row-style="rowStyle1"
+
+    >
+
+        <thead class="bg-white">
+	        <tr>
+				<th data-field="Nombre" data-sortable="true" data-switchable="false">Nombre</th>
+				<th data-field="Departamento" data-sortable="true">Departamento</th>
+				<th data-field="Cargo" data-sortable="true">Cargo</th>
+				<th data-field="Horario" data-sortable="true">Horario</th>
+				<th data-field="Movil" data-sortable="true">Móvil</th>
+				<th data-field="Telefono" data-sortable="true">Teléfono</th>
+				<th data-field="Fax" data-sortable="true">Fax</th>
+				<th data-field="Email" data-sortable="true">E-mail</th>
+				<th data-field="Notas" data-sortable="true">Notas</th>
+				<th data-field="tip1" data-sortable="false" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false"></th>
+	        </tr>
+      	</thead>
+      	<tbody>
+    	</tbody>
+    </table>
+
+
+    <!--funciones tabla contactos -->
+<script>
+	var $table1 	=  $('#tabContactos');
+	var iPos1       =  0;			
+
+	$(function() {
+
+	    $table1.on('click-row.bs.table', function (e, row, $element) {
+	      	window.nombreC	= row.Nombre;
+			$('.success1').removeClass('success1');     
+	      	$element.addClass('success1');	    	
+	    	return false;
+	    })
+
+	    $table1.on('sort.bs.table', function (name, order) { 
+	    	setTimeout(
+	        	function () {
+	    			window.nombreC = $table1.bootstrapTable('getData')[0].Nombre;
+					seleccionarFila('tabContactos', 'nombreC', 'Nombre', 'success1');
+				}, 200)
+	    })
+
+	    $table1.on('search.bs.table', function (text) {
+	    	window.nombreC = $table1.bootstrapTable('getData')[0].Nombre;
+			seleccionarFila('tabContactos', 'nombreC', 'Nombre', 'success1');    	
+	    }) 
+
+	    $table1.on('refresh.bs.table', function (params) {
+
+	    })	    
+
+	})
+
+	window.icons = {
+		detailOpen: 	'bi-caret-down-fill',
+		detailClose: 	'bi-caret-up-fill'
+	};
+
+	function rowStyle1(row, index) {
+		let customClass1 = "";
+		if (row.Nombre == window.nombreC) { customClass1 = 'success1'; }
+		else {}
+		return { classes: customClass1 };
+	}
+  
+
+	function detailFormatter1(index, row) {
+		var html = [];
+		$.each(row, function (key, value) {
+			if (key === 'tip1' || !value || value === '') { }
+			else {
+				if (key === 'Movil' || key == 'Telefono') {
+					html.push('<p><div><b>' + key + ':</b> ' + value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul></div></p>');
+				} else if (key === 'Email') {
+					html.push('<p><div><b>' + key + ':</b> ' + value + ' <button type="button" class="btn btn-outline-secondary btn-sm" href="mailto:' + value + '" target="_blank"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button></div></p>');	
+				} else {
+					html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+				}
+			}
+		})
+		return html.join('');
+	} 
+
+
+
+</script>
+
+
+
+							 </div>
+						</div>
+					</div>
+
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="flush-headingTwo">
+							<button class="accordion-button collapsed bg-success bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+					    		<i class="p-1 bi bi-credit-card" style="font-size: 1rem; color: currentColor;"></i>  Datos de cobro
+					  		</button>
+						</h2>
+						<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+						<div class="accordion-body bg-primary bg-opacity-25">
+
+		    				<div class="row g-1 mb-3 mt-1">
+								<div class="col-auto form-floating">
+									<input type="text" name="n_entidad" id="n_entidad" maxlength=4 size=4 required class="form-control" title="Entidad" data-toggle="tooltip">
+									<label for="n_entidad">Entidad</label>
+					          	</div>
+					          	<div class="col-auto form-floating">
+					              	<input type="text" name="n_oficina" id="n_oficina" maxlength=4 size=4 required class="form-control" title="Oficina" data-toggle="tooltip">
+					              	<label for="n_oficina">Oficina</label>
+					            </div>
+					            <div class="col-auto form-floating">
+					              	<input type="text" name="n_dc" id="n_dc" maxlength=2 size=2 required class="form-control" title="Dígitos de control" data-toggle="tooltip">
+					              	<label for="n_dc">D. C.</label>
+					            </div>
+					            <div class="col-auto form-floating">
+					              	<input type="text" name="n_cuenta" id="n_cuenta" maxlength=10 size=10 required class="form-control" title="Número de cuenta" data-toggle="tooltip">
+					              	<label for="n_cuenta">Nº de cuenta</label>
+					            </div>
+					        	
+					        </div>
+					        <div class="row g-1 mb-3">
+					            <div class="col-auto form-floating">
+					                <input type="text" name="iban" id="iban" maxlength="4" size=4 placeholder="IBAN" title="IBAN" class="form-control" style="text-align:center" data-toggle="tooltip">
+					                <label for="iban">IBAN</label>
+					            </div>
+					            <div class="col-auto form-floating">
+					              	<input type="text" name="bic" id="bic" maxlength="8" size=8 placeholder="BIC" title="BIC" class="form-control" style="text-align:center" data-toggle="tooltip">
+					              	<label for="bic">BIC</label>
+					            </div>
+					            <div class="col-auto form-floating">
+									<input type="text" id="nombreBanco" size=40 placeholder="Banco" readonly class="form-control" title="Nombre del banco" data-toggle="tooltip">
+									<label for="nombreBanco">Banco</label>
+								</div>
+					        </div>
+
+
+							<div class="row gx-3 gy-2 mb-2 align-items-end">
+
+								<div class="col-auto">
+									<div class="row gx-2 gy-1 align-items-end">
+										<div class="col-auto">
+											<label for="COD_REMESA">Cta. remesa</label>
+											<div class="input-group">
+												<input type="text" name="COD_REMESA" id="COD_REMESA" size=5 maxlength="5" readonly class="form-control" title="Código de la Cuenta de Remesa" data-toggle="tooltip">
+												<div class="input-group-append">
+													<button type="button" class="btn btn-outline-secondary" id="abrirCtasRemesas" onclick="nuevaVentana('cuentasremesas', 'formCliente', 'COD_REMESA', 'desCtaRemesa', '')" title="Abrir el fichero de Cuentas de Remesas" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+												</div>
+											</div>
+										</div>
+										<div class="col-auto">
+											<input type="text" id="desCtaRemesa" size=40 maxlength="40" readonly class="form-control" title="Descripción de la Cuenta de Remesa" data-toggle="tooltip">
+										</div>
+									</div>
+								</div>
+
+					            <div class="col-auto">
+					                <label for="iban">Referencia mandato</label>
+					                <input type="text" name="refMandatoRemesas" id="refMandatoRemesas" maxlength="35" size=35 title="Referencia del mandato u orden de domiciliación (35 caracteres máx.)" class="form-control" data-toggle="tooltip">
+					            </div>
+
+				                <div class="col-auto">
+									<div class="row gx-1">
+										<div class="col-auto">
+											<label for="fechaMandatoRemesas">Fecha mandato</label>
+											<input type="date" name="fechaMandatoRemesas" id="fechaMandatoRemesas" value="" title="Fecha de la firma del mandato u orden de domiciliación" data-toggle="tooltip" required class="form-control">
+										</div>
+									</div> 
+								</div>
+
+							</div>
+
+			            </div>
+			        </div>
+			    </div>     	
+
+
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingThree">
+          	<button class="accordion-button collapsed bg-success bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+            	<i class="p-1 bi bi-truck" style="font-size: 1rem; color: currentColor;"></i>  Entregas
+          </button>
+        </h2>
+        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body bg-primary bg-opacity-25">
+    			<div class="row gx-3 gy-2 mb-3 mt-1">
+	    			<div class="col-auto">
+		    			<label class="radio-inline control-label">Portes</label>
+						<input type="radio" class="btn-check" name="portes" id="portes1" value=1>
+						<label class="btn btn-outline-primary" for="portes1" autocomplete="off">Debidos</label>
+						<input type="radio" class="btn-check" name="portes" id="portes2" value=2>
+						<label class="btn btn-outline-primary" for="portes2" autocomplete="off">Pagados</label>
+	    			</div>
+	    			<div class="col-auto">
+		    			<label class="radio-inline control-label">Forma de envío</label>
+						<input type="radio" class="btn-check" name="forma_de_envio" id="formaEnvio1" value=1>
+						<label class="btn btn-outline-primary" for="formaEnvio1" autocomplete="off">Nuestros medios</label>
+						<input type="radio" class="btn-check" name="forma_de_envio" id="formaEnvio2" value=2>
+						<label class="btn btn-outline-primary" for="formaEnvio2" autocomplete="off">Sus medios</label>
+						<input type="radio" class="btn-check" name="forma_de_envio" id="formaEnvio3" value=3>
+						<label class="btn btn-outline-primary" for="formaEnvio3" autocomplete="off">Terceros</label>						
+	    			</div>
+	    		</div>
+
+
+	    		<div class="row gx-3 gy-2 mb-3">
+					<div class="col-auto">
+						<div class="row align-items-end gx-2 gy-1">
+							<div class="col-auto">
+								<div class="row gx-1">
+									<div class="col-auto">
+										<label for="empresa_de_envio">Agencia</label>
+										<div class="input-group">
+											<input type="text" name="empresa_de_envio" id="empresa_de_envio" size=5 maxlength="5" readonly class="form-control" title="Código Agencia de envío" data-toggle="tooltip">
+											<div class="input-group-append">
+												<button type="button" class="btn btn-outline-secondary" id="abrirAgencias" onclick="nuevaVentana('agencias', 'formCliente', 'empresa_de_envio', 'nombreAgencia', '')" title="Abrir el fichero de agencias de envíos" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-auto">
+								<input type="text" id="nombreAgencia" size=30 maxlength="30" readonly class="form-control" title="Nombre de la agencia de envío" data-toggle="tooltip">
+							</div>
+						</div>
+					</div>
+
+					<div class="col-auto">
+						<div class="row align-items-end gx-2 gy-1">
+							<div class="col-auto">
+			    				<label for="zonaagencia">Zona agencia</label>
+		                        <select name="zonaagencia" id="zonaagencia" class="form-select" title="Zona del cliente para la agencia de envío" data-toggle="tooltip">
+		                            <option value=1>A</option>
+		                            <option value=2>B</option>
+		                            <option value=3>C</option>
+		                            <option value=4>D</option>
+		                        </select>
+		                    </div>
+							<div class="col-auto">
+								<input type="text" id="desZonaAgencia" size=50 maxlength="50" readonly class="form-control" title="Descripción de la zona" data-toggle="tooltip">
+							</div>
+		                </div>
+		            </div>
+    			</div>
+
+
+<!-- TABLA Direcciones de Envío -->
+	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila2">
+
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-dark dropdown-toggle" type="button" id="MenuMovilD" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovilD">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 1)" href="#" id="nuevoDirEnvio2"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nueva dirección</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 2)" href="#" id="editarDirEnvio2"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar dirección</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarReg('tabDirEnvios', 'numD', 'num', 'dirEnviosEliminar')" href="#" id="eliminarDirEnvio2"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar dirección</a></li>
+				<li><a class=" dropdown-item" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver dirección</a></li>
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenuD1"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenuD1" id="opcion1D1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabDirEnvios')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasClientes', 2)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Direcciones de envío', tabDirEnvios)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenuD2"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenuD2">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+	
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			<div class="btn-group" role="group">
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 1)" title="Nueva dirección de envío" data-toggle="tooltip" id="nuevoDirEnvio1">
+			  <i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 2)" title="Editar dirección de envío" data-toggle="tooltip" id="editarDirEnvio1">
+			  <i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="eliminarReg('tabDirEnvios', 'numD', 'num', 'dirEnviosEliminar')" title="Eliminar dirección de envío" data-toggle="tooltip" id="eliminarDirEnvio1">
+			  <i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalDirEnvio', 'opcionDirEnvio', 4)" title="Ver dirección de envío" data-toggle="tooltip">
+			  <i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-1 mb-1">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Direcciones de envío</a>
+		</div>	
+
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabDirEnvios')">
+					<label class="form-check-label" for="vistaTarjeta"></label>			
+				</div>		
+			</div>
+
+            <div class="btn-group" role="group">
+                  <a href="#" class="dropdown-item d-none d-md-block" onClick="mostrarColumnas('modalColumnasTablasClientes', 2)" title="Mostrar columnas" data-toggle="tooltip"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i></a>
+                    <a href="#" class="dropdown-item d-none d-md-block" onClick="imprimirTabla('Direcciones de envío', tabDirEnvios)" title="Imprimir tabla" data-toggle="tooltip"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i></a>
+                    <a href="#" class="dropdown-item dropdown-toggle d-none d-md-block" data-bs-toggle="dropdown" title="Exportar tabla" data-toggle="tooltip"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i></a>
+                <ul class="dropdown-menu">
+                    <li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','DireccionesEnvio','Tabla de direcciones de envío',14, 'tabDirEnvios')" href="#">SQL</a></li>
+                </ul>
+            </div>
+
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar2" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabDirEnvios','buscar2')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+
+
+	</div>
+
+<table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabDirEnvios" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="num" data-undefined-text="" 
+
+    data-unique-id="num"
+    
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar2"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabDirEnvios"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-virtual-scroll="false"
+
+	data-icons-prefix="bi"
+	data-icons="icons"
+
+    data-export-data-type="all"
+
+    data-sort-name="num"
+    data-sort-order="asc"
+
+    data-auto-refresh="false"
+    data-show-auto-refresh="false"
+
+	data-detail-view="true"
+	data-detail-formatter="detailFormatter2"    
+    data-row-style="rowStyle2"
+
+    >
+
+        <thead class="bg-white">
+	        <tr>
+				<th data-field="num" data-sortable="true" data-switchable="false" data-align="right">Núm.</th>
+				<th data-field="NombreD" data-sortable="true">Nombre</th>
+				<th data-field="PorDefecto" data-sortable="true" data-formatter="preFormato2" data-align="center">Por defecto</th>
+				<th data-field="Dirección" data-sortable="true">Dirección</th>
+				<th data-field="CodPosD" data-sortable="true" data-title-tooltip="Código postal" id="cpD">C. P.</th>
+				<th data-field="Población" data-sortable="true">Población</th>
+				<th data-field="Provincia" data-sortable="true">Provincia</th>
+				<th data-field="País" data-sortable="true">País</th>
+				<th data-field="Teléfono1D" data-sortable="true">Teléfono 1</th>
+				<th data-field="Teléfono2D" data-sortable="true">Teléfono 2</th>
+				<th data-field="FaxD" data-sortable="true">Fax</th>
+				<th data-field="EmailD" data-sortable="true">E-mail</th>
+				<th data-field="PersonaContactoD" data-sortable="true">Persona de contacto</th>
+				<th data-field="ZonaAgenciaD" data-sortable="true" data-formatter="zonaAgenciaD">Zona agencia</th>
+				<th data-field="tip2" data-sortable="false" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false"></th>
+	        </tr>
+      	</thead>
+      	<tbody>
+    	</tbody>
+    </table>
+
+
+    <!--funciones tabla Direcciones de Envío -->
+<script>
+	var $table2 	=  $('#tabDirEnvios');		
+
+	$(function() {
+
+	    $table2.on('click-row.bs.table', function (e, row, $element) {
+	      	window.numD	= row.num;
+			$('.success2').removeClass('success2');     
+	      	$element.addClass('success2');	    	
+	    	return false;
+	    })
+
+	    $table2.on('sort.bs.table', function (name, order) { 
+	    	setTimeout(
+	        	function () {
+	    			window.numD = $table2.bootstrapTable('getData')[0].num;
+					seleccionarFila('tabDirEnvios', 'numD', 'num', 'success2');
+				}, 200)
+	    })
+
+	    $table2.on('search.bs.table', function (text) {
+	    	window.numD = $table2.bootstrapTable('getData')[0].num;
+			seleccionarFila('tabDirEnvios', 'numD', 'num', 'success2');    	
+	    }) 
+
+	})
+
+	window.icons = {
+		detailOpen: 	'bi-caret-down-fill',
+		detailClose: 	'bi-caret-up-fill'
+	};
+
+	function rowStyle2(row, index) {
+		let customClass2 = "";
+		if (row.num == window.numD) { customClass2 = 'success2'; }
+		else {}
+		return { classes: customClass2 };
+	}
+  
+
+	function detailFormatter2(index, row) {
+		var html = [];
+		$.each(row, function (key, value) {
+			if (key == 'tip2' || !value || value == '') { }
+			else {
+				if (key == 'Teléfono1D' || key == 'Teléfono2D') {
+					var s = 'Teléfono 1';
+					if (key == 'Teléfono2D') { s = 'Teléfono 2'; }
+					html.push('<p><div><b>' + s + ':</b> ' + value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul></div></p>');
+				} else if (key == 'EmailD') {
+					html.push('<p><div><b>' + 'E-mail' + ':</b> ' + value + ' <button type="button" class="btn btn-outline-secondary btn-sm" href="mailto:' + value + '" target="_blank"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button></div></p>');
+				} else {
+					var keyD = key;
+					var valueD = value;
+					if (keyD == 'num') { keyD = 'Núm.';}
+					if (keyD == 'NombreD') { keyD = 'Nombre';}
+					if (keyD == 'CodPosD') { keyD = 'C. P.';}
+					if (keyD == 'PersonaContactoD') { keyD = 'Persona de contacto';}
+					if (keyD == 'FaxD') { keyD = 'Fax';}
+					if (keyD == 'PorDefecto') { keyD = 'Por defecto'; valueD = formatoBool(value, true); }	
+
+					if (keyD == 'ZonaAgenciaD') {
+						valueD = aTipoTarifa[value - 1];
+						keyD = 'Zona agencia';
+					}						
+
+					html.push('<p><b>' + keyD + ':</b> ' + valueD + '</p>');
+				}
+			}
+		})
+		return html.join('');
+	} 
+
+	function preFormato2 (value, row) { return formatoBool(value, true); }
+	function zonaAgenciaD(value, row) { return aTipoTarifa[value - 1];   }
+
+</script>
+
+            </div>
+     	</div>
+	</div>     
+
+
+
+
+
+
+
+	<div class="accordion-item">
+	<h2 class="accordion-header" id="flush-headingFour">
+	  <button class="accordion-button collapsed bg-success bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+	    <i class="p-1 bi bi-file-earmark-post-fill" style="font-size: 1rem; color: currentColor;"></i>  Facturación
+	  </button>
+	</h2>
+	<div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushExample">
+	    <div class="accordion-body bg-primary bg-opacity-25">
+					<div class="row gx-3 gy-3 mb-3">
+	    				<div class="col-auto">
+	    					<label for="dto_comercial">Dto. comercial</label>
+							<input type="text" name="dto_comercial" id="dto_comercial" required size=8 style="text-align:right;" class="form-control" title="Descuento comercial" data-toggle="tooltip">
+						</div>
+	    				<div class="col-auto">
+	    					<label for="dto_pronto_pago">Dto. pronto pago</label>
+							<input type="text" name="dto_pronto_pago" id="dto_pronto_pago" required size=8 style="text-align:right;" class="form-control" title="Descuento por pronto pago" data-toggle="tooltip">
+						</div>
+		    			<div class="col-auto">
+	    					<label for="intereses_financieros">Recargo financiero</label>
+							<input type="text" name="intereses_financieros" id="intereses_financieros" required size=8 style="text-align:right;" class="form-control" title="Recargo financiero" data-toggle="tooltip">
+						</div>
+					</div>
+					<div class="row gx-3 gy-3 mb-3">
+	    				<div class="col-auto">
+		    				<label for="dia_de_pago_1">Día de pago 1</label>
+		    				<input type="number" name="dia_de_pago_1" id="dia_de_pago_1" required value=0 min=0 max=31 size=2 style="text-align:right;" class="form-control" title="Día de pago 1" data-toggle="tooltip">
+	    				</div>
+	    				<div class="col-auto">
+		    				<label for="dia_de_pago_2">Día de pago 2</label>
+		    				<input type="number" name="dia_de_pago_2" id="dia_de_pago_2" required value=0 min=0 max=31 size=2 style="text-align:right;" class="form-control" title="Día de pago 2" data-toggle="tooltip">
+	    				</div>
+	    				<div class="col-auto">
+		    				<label for="dia_de_pago_3">Día de pago 3</label>
+		    				<input type="number" name="dia_de_pago_3" id="dia_de_pago_3" required value=0 min=0 max=31 size=2 style="text-align:right;" class="form-control" title="Día de pago 3" data-toggle="tooltip">
+	    				</div>
+	    				<div class="col-auto">
+		    				<label for="mes_no_pago">Mes no pago</label>
+	                        <select name="mes_no_pago" id="mes_no_pago" class="form-select" title="Mes no pago" data-toggle="tooltip">
+	                            <option value=0>Ninguno</option>
+	                            <option value=1>Enero</option>
+	                            <option value=2>Febrero</option>
+	                            <option value=3>Marzo</option>
+	                            <option value=4>Abril</option>
+	                            <option value=5>Mayo</option>
+	                            <option value=6>Junio</option>
+	                            <option value=7>Julio</option>
+	                            <option value=8>Agosto</option>
+	                            <option value=9>Septiembre</option>
+	                            <option value=10>Octubre</option>
+	                            <option value=11>Noviembre</option>
+	                            <option value=12>Diciembre</option>
+	                        </select>			    					
+	    				</div>
+		    		</div>
+	    			<div class="row gx-3 gy-3 mb-3">
+	    				<div class="col-auto form-floating">
+							<input type="text" name="riesgo_concedido" id="riesgo_concedido" required size=18 style="text-align:right;" class="form-control" title="Riesgo financiero que concedemos al cliente" data-toggle="tooltip">
+							<label for="riesgo_concedido">Riesgo concedido</label>
+						</div>
+						<div class="col-auto form-floating">
+		    				<input type="text" id="riesgoAlcanzado" readonly size=18 title="Riesgo alcanzado" style="text-align:right; display: none;" class="form-control" data-toggle="tooltip">
+		    				<label for="riesgoAlcanzado" style="display: none;">Alcanzado</label>
+	    				</div>
+	    				<div class="col-auto form-floating">
+		    				<input type="text" id="Deposito" readonly size=18 style="text-align:right; display: none;" class="form-control" data-toggle="tooltip" title="Déposito favorable al cliente">
+		    				<label for="Deposito" style="display: none;">Depósito</label>
+	    				</div>
+	    			</div>
+	    			<div class="row gx-3">
+						<div class="col-auto">
+							<div class="row align-items-end gx-2 gy-1 mb-3">
+								<div class="col-auto">
+									<label for="forma_de_pago">Forma de pago</label>
+									<div class="input-group">
+										<input type="text" name="forma_de_pago" id="forma_de_pago" size=5 readonly class="form-control" title="Código de la forma de pago" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirFormasPago" onclick="nuevaVentana('formaspago', 'formCliente', 'forma_de_pago', 'formaPagoDes', '')" title="Abrir el fichero de formas de pago" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<input type="text" id="formaPagoDes" size=40 readonly class="form-control" title="Nombre de la forma de pago" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>	    				
+	    				<div class="col-auto">
+			    			<div class="row align-items-end gx-2 gy-1 mb-3">
+								<div class="col-auto">
+									<label for="divisa">Divisa</label>
+									<div class="input-group">
+										<input type="text" name="divisa" id="divisa" size=3 readonly class="form-control" title="Código de divisa" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirDivisas" onclick="nuevaVentana('divisas', 'formCliente', 'divisa', 'divisaNom', '')" title="Abrir el fichero de divisas" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>							
+								</div>
+								<div class="col-auto">
+									<input type="text" id="divisaNom" size=30 readonly class="form-control" title="Nombre de la divisa" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row gx-3 gy-3 align-items-end mb-3">
+						<div class="col-auto">
+		    				<label for="TIPO_TARIFA">Tipo tarifa</label>
+	                        <select name="TIPO_TARIFA" id="TIPO_TARIFA" class="form-select" title="Tipo tarifa" data-toggle="tooltip">
+	                            <option value=1>A</option>
+	                            <option value=2>B</option>
+	                            <option value=3>C</option>
+	                            <option value=4>D</option>
+	                        </select>
+	                    </div>
+	                    <div class="col-auto">
+	                    	<button type="button" class="btn btn-secondary mr-3 text-white" id="preciosPersonalizados" value="Precios personalizados" title="Precios personalizados" data-toggle="tooltip" style="display: none;"><i class="bi bi-tag-fill" style="font-size: 1rem; color: white;" ></i> Precios personalizados</button>
+	                    </div>
+						<div class="col-auto">
+		    				<label for="periodicidad">Facturación</label>
+	                        <select name="periodicidad" id="periodicidad" class="form-select" title="Periodicidad de la facturación" data-toggle="tooltip">
+	                            <option value=''></option>
+	                            <option value='y'>Diaria</option>
+	                            <option value='ww'>Semanal</option>
+	                            <option value='m'>Mensual</option>
+	                            <option value='q'>Trimestral</option>
+	                        </select>
+	                    </div>
+						<div class="col-auto">
+							<div class="row align-items-end gx-2 gy-1">
+								<div class="col-auto">
+									<label for="Tipo atención">Tipo de atención</label>
+									<div class="input-group">
+										<input type="text" name="TIPO_ATENCION" id="TIPO_ATENCION" size=5 readonly class="form-control" title="Código de Tipo Atención" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirTiposAtencion" onclick="nuevaVentana('tiposatencion', 'formCliente', 'TIPO_ATENCION', 'desTipoAtencion', '')" title="Abrir el fichero de Tipos de Atención" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<input type="text" id="desTipoAtencion" size=40 readonly class="form-control" title="Descripción de Tipo Atención" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>	                    	                    
+						<div class="col-auto">
+							<div class="row align-items-end gx-2 gy-1">
+								<div class="col-auto">
+									<label for="codAgente">Agente comercial</label>
+									<div class="input-group">
+										<input type="text" id="codAgente" size=15 readonly class="form-control" title="Código del Agente Comercial" data-toggle="tooltip">
+										<div class="input-group-append">
+											<button type="button" class="btn btn-outline-secondary" id="abrirAgentes" onclick="nuevaVentana('agentes', 'formCliente', 'codAgente', 'nomAgente', 'COD_AGENTE_N')" title="Abrir el fichero de Agentes Comerciales" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<input type="text" id="nomAgente" size=60 readonly class="form-control" title="Nombre del Agente Comercial" data-toggle="tooltip">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row gx-3 gy-3 align-items-center mb-2">
+						<div class="col-auto form-floating">
+		                    <select name="iva" id="iva" class="form-select" title="Régimen de IVA" data-toggle="tooltip">
+		                        <option value=0>Exento</option>
+		                        <option value=1>No devengado</option>
+		                        <option value=2>Devengado régimen general</option>
+		                        <option value=5>Entregas intracomunitarias exentas</option>
+		                        <option value=4>Devengado Exportaciones</option>
+		                    </select>
+		                    <label for="iva" id="etIVA">Régimen de IVA</label>
+		                </div>
+		                <div class="col-auto">
+							<div class="form-check form-switch">
+							  	<label class="form-check-label">
+							    	<input type="checkbox" name="re" id="re" class="form-check-input" value=0 title="Recargo de Equivalencia" data-toggle="tooltip">Recargo Equivalencia</label>
+							</div>
+						</div>	
+						<div class="col-auto form-floating">
+							<input type="text" name="subcuenta" id="subcuenta" placeholder="Subcuenta" maxlength="12" size=12 class="form-control" title="Subcuenta contable" data-toggle="tooltip">
+							<label for="subcuenta">Subcuenta</label>
+						</div>						
+			    		<div class="col-auto form-floating">
+							<input type="text" name="CodigoProveedor" id="CodigoProveedor" placeholder="Cód. proveedor" maxlength="15" size=15 class="form-control" title="Código de proveedor que nos asigna el cliente" data-toggle="tooltip">
+							<label for="CodigoProveedor">Cód. proveedor</label>
+						</div>
+					</div>
+	    		</div>
+			</div>
+		</div>
+
+
+	<div class="accordion-item">
+	<h2 class="accordion-header" id="flush-headingFive">
+	  <button class="accordion-button collapsed bg-success bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+	    <i class="p-1 bi bi-calendar-week" style="font-size: 1rem; color: currentColor;"></i>  Contactos comerciales
+	  </button>
+	</h2>
+		<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#accordionFlushExample">
+		    <div class="accordion-body bg-primary bg-opacity-25">
+
+
+
+<!-- TABLA Contactos comerciales -->
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila3">
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-dark dropdown-toggle" type="button" id="MenuMovilDD" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovilDD">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 1)" href="#" id="nuevoContactoComercial2"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo contacto</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 2)" href="#" id="editarContactoComercial2"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar contacto</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarReg('tabContactosComerciales', 'FechaHoraCC', 'FechaHora', 'contactosComercialesEliminar')" href="#" id="eliminarContactoComercial2"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar contacto</a></li>
+				<li><a class=" dropdown-item" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver contacto</a></li>
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenuCC"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenuCC" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabContactosComerciales')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasClientes', 3)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Contactos comerciales', tabContactosComerciales)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenuCC"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenuCC">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','ContactosComerciales','Tabla de contactos comerciales',9, 'tabContactosComerciales')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','ContactosComerciales','Tabla de contactos comerciales',9, 'tabContactosComerciales')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','ContactosComerciales','Tabla de contactos comerciales',9, 'tabContactosComerciales')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','ContactosComerciales','Tabla de contactos comerciales',9, 'tabContactosComerciales')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','ContactosComerciales','Tabla de contactos comerciales',9, 'tabContactosComerciales')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			<div class="btn-group" role="group">
+
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 1)" title="Nuevo contacto" data-toggle="tooltip" id="nuevoContactoComercial1">
+			  <i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 2)" title="Editar contacto" data-toggle="tooltip" id="editarContactoComercial1">
+			  <i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="eliminarReg('tabContactosComerciales', 'FechaHoraCC', 'FechaHora', 'contactosComercialesEliminar')" title="Eliminar contacto" data-toggle="tooltip" id="eliminarContactoComercial1">
+			  <i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+				<button type="button" class="btn btn-sm" onClick="regTabla('modalContactoComercial', 'opcionContactosComerciales', 4)" title="Ver contacto" data-toggle="tooltip">
+			  <i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i>
+				</button>
+
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-1 mb-1">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Contactos comerciales</a>
+		</div>			
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabContactosComerciales')">
+					<label class="form-check-label" for="vistaTarjeta"></label>	
+				</div>
+			</div>
+
+            <div class="btn-group" role="group">
+                  <a href="#" class="dropdown-item d-none d-md-block" onClick="mostrarColumnas('modalColumnasTablasClientes', 3)" title="Mostrar columnas" data-toggle="tooltip"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i></a>
+                    <a href="#" class="dropdown-item d-none d-md-block" onClick="imprimirTabla('Contactos comerciales', tabContactosComerciales)" title="Imprimir tabla" data-toggle="tooltip"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i></a>
+                    <a href="#" class="dropdown-item dropdown-toggle d-none d-md-block" data-bs-toggle="dropdown" title="Exportar tabla" data-toggle="tooltip"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i></a>
+                <ul class="dropdown-menu">
+                    <li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','ContactosComerciales','Tabla de contactos comerciales',100, 'tabContactosComerciales')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','ContactosComerciales','Tabla de contactos comerciales',100, 'tabContactosComerciales')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','ContactosComerciales','Tabla de contactos comerciales',100, 'tabContactosComerciales')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','ContactosComerciales','Tabla de contactos comerciales',100, 'tabContactosComerciales')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','ContactosComerciales','Tabla de contactos comerciales',100, 'tabContactosComerciales')" href="#">SQL</a></li>
+                </ul>
+            </div>			
+
+
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar3" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabContactosComerciales','buscar3')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+
+
+	</div>
+
+
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabContactosComerciales" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="fec3" data-undefined-text="" 
+
+    data-unique-id="fec3"
+    
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar3"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabContactosComerciales"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-virtual-scroll="false"
+
+	data-icons-prefix="bi"
+	data-icons="icons"
+
+    data-export-data-type="all"
+
+    data-sort-name="fec3"
+    data-sort-order="asc"
+
+    data-auto-refresh="false"
+    data-show-auto-refresh="false"
+
+	data-detail-view="true"
+	data-detail-formatter="detailFormatter3"    
+    data-row-style="rowStyle3"
+
+    >
+
+        <thead class="bg-white">
+	        <tr>
+				<th data-field="fec3" data-sortable="true" data-switchable="false" data-formatter="dateFormat">Fecha/hora</th>
+				<th data-field="asu3" data-sortable="true">Asunto</th>
+				<th data-field="des3" data-sortable="true">Desarrollo</th>
+				<th data-field="res3" data-sortable="true">Resultado</th>
+				<th data-field="tip3" data-sortable="false" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false"></th>
+	        </tr>
+      	</thead>
+      	<tbody>
+    	</tbody>
+    </table>
+
+
+    <!--funciones tabla Contactos Comerciales -->
+<script>
+	var $table3 	=  $('#tabContactosComerciales');		
+
+	$(function() {
+
+	    $table3.on('click-row.bs.table', function (e, row, $element) {
+	      	window.FechaHoraCC	= row.fec3;
+			$('.success3').removeClass('success3'); 
+	      	$element.addClass('success3');	
+	    	return false;
+	    })
+
+	    $table3.on('sort.bs.table', function (name, order) { 
+	    	setTimeout(
+	        	function () {
+	    			window.FechaHoraCC = $table3.bootstrapTable('getData')[0].fec3;
+					seleccionarFila('tabContactosComerciales', 'FechaHoraCC', 'fec3', 'success3');
+				}, 200)
+	    })
+
+	    $table3.on('search.bs.table', function (text) {
+	    	window.FechaHoraCC = $table3.bootstrapTable('getData')[0].fec3;
+			seleccionarFila('tabContactosComerciales', 'FechaHoraCC', 'fec3', 'success3');    	
+	    }) 
+
+	})
+
+	window.icons = {
+		detailOpen: 	'bi-caret-down-fill',
+		detailClose: 	'bi-caret-up-fill'
+	};
+
+	function rowStyle3(row, index) {
+		let customClass3 = "";
+		if (row.fec3 == window.FechaHoraCC) { customClass3 = 'success3'; }
+		else {}
+		return { classes: customClass3 };
+	}
+  
+
+	function detailFormatter3(index, row) {
+		var html = [];
+		$.each(row, function (key, value) {
+			if (key == 'tip3' || !value || value == '') { }
+			else {
+				if (key == 'fec3') {
+					html.push('<p><b>' + 'Fecha/Hora' + ':</b> ' + formatoFechaHora(value) + '</p>');
+				} else {
+					html.push('<p><b>' + key + ':</b> ' + value + '</p>');	
+				}
+			}
+		})
+		return html.join('');
+	} 
+
+
+	function dateFormat(value, row, index) {
+		return formatoFechaHora(value);
+	}	
+
+</script>
+
+
+
+
+
+		    </div>
+		</div>
+	</div>		
+
+
+
+
+				</div>
+
+				<div>
+					<textarea name="comentario" id="comentario" placeholder="Notas para documentos (presupuestos, pedidos, albaranes y facturas)" maxlength="120" size=120 class="form-control mb-3" title="Notas para documentos (presupuestos, pedidos, albaranes y facturas)" data-toggle="tooltip"></textarea>
+					<textarea name="observaciones" id="observaciones" placeholder="Notas internas" maxlength="120" size=120 class="form-control mb-3" title="Notas internas" data-toggle="tooltip"></textarea>
+				</div>
+
+			</div>
+
+			</form>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+
+
+	modalCliente.addEventListener('show.bs.modal', function (e) {	
+
+		if (window.opcionCliente === 1) {
+
+            $('#tabContactos').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=20&codN=0'
+            });
+
+            $('#tabDirEnvios').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=320&codN=0'
+            });
+
+            $('#tabContactosComerciales').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=620&codN=0'
+            });			
+
+        	cod_cliente.focus();
+
+			let date = new Date();
+			let currentDate = date.toISOString().slice(0,10);
+			fecha_antiguedad.defaultValue=   	currentDate;
+			fechaMandatoRemesas.defaultValue =  currentDate;        	
+
+			forma_de_pago.defaultValue=      	localStorage.getItem('codFPpredClie');
+			formaPagoDes.defaultValue=       	localStorage.getItem('desFPpredClie');
+			divisa.defaultValue=             	localStorage.getItem('codDivPred');
+			divisaNom.defaultValue=          	localStorage.getItem('nomDivPred');
+			zona.defaultValue=             		localStorage.getItem('codZonaPred') || '';
+			zonaDes.defaultValue=             	localStorage.getItem('desZonaPred') || '';
+
+			cod_cliente.defaultValue=   		'';
+			empresa.defaultValue=             	'';
+			nombrecomercial.defaultValue=     	'';
+			cif.defaultValue=                 	'';
+			COD_AGENTE_N.defaultValue =			0;
+			domicilio.defaultValue=           	'';
+			cod_postal.defaultValue=          	'';
+			poblacion.defaultValue=           	'';
+			provincia.defaultValue=           	'';
+			pais.defaultValue=                	'';
+			telefono_1.defaultValue=          	'';
+			telefono_2.defaultValue=          	'';
+			fax.defaultValue=                 	'';
+			ce.defaultValue=                  	'';
+			www.defaultValue=                 	'';
+			persona_contacto.defaultValue=    	'';
+			n_entidad.defaultValue=            	'0000';
+			n_oficina.defaultValue=            	'0000';
+			n_dc.defaultValue=                 	'00';
+			n_cuenta.defaultValue=             	'0000000000';
+			iban.defaultValue=                	'';
+			bic.defaultValue=                 	'';
+			nombreBanco.defaultValue=           '';
+			dia_de_pago_1.defaultValue=       	localStorage.getItem('dp1PD');
+			dia_de_pago_2.defaultValue=       	localStorage.getItem('dp2PD');
+			dia_de_pago_3.defaultValue=       	localStorage.getItem('dp3PD');
+			subcuenta.defaultValue=            	'4300000';
+			observaciones.defaultValue=        	'';
+			comentario.defaultValue=       		'';
+			empresa_de_envio.defaultValue=     	localStorage.getItem('codAgenciaPred') || '';
+			nombreAgencia.defaultValue=     	localStorage.getItem('desAgenciaPred') || '';
+			CodigoGrupoCliente.defaultValue =	localStorage.getItem('codGrupoClientePred') || '';
+			desGrupoCliente.defaultValue =      localStorage.getItem('desGrupoClientePred') || '';
+
+			COD_REMESA.defaultValue = 			'';
+			desCtaRemesa.defaultValue =         '';
+			refMandatoRemesas.defaultValue =	'';
+			CodigoProveedor.defaultValue=		'';
+			
+			seleccionarRadio('portes', localStorage.getItem('porPD'));
+			seleccionarRadio('forma_de_envio', localStorage.getItem('fdePD'));
+			re.defaultChecked=false;
+		  	seleccionarCombo('mes_no_pago', localStorage.getItem('mnpPD'));
+		  	seleccionarCombo('iva', '2');
+		  	seleccionarCombo('periodicidad', localStorage.getItem('perioPD'));
+		  	seleccionarCombo('zonaagencia', '1');
+		  	seleccionarCombo('TIPO_TARIFA', localStorage.getItem('ttPD'));
+			
+			let formatoNumNuevo = formatoNum(0, window.decImpDivPred, ',', '.', window.abrevDivPred);
+			riesgo_concedido.defaultValue=      formatoNumNuevo;
+			riesgoAlcanzado.defaultValue=      	formatoNumNuevo;
+			Deposito.defaultValue=      		formatoNumNuevo;
+
+			dto_comercial.defaultValue=        	localStorage.getItem('dtoComPD').replace('.', ',') + ' %';
+			dto_pronto_pago.defaultValue=       localStorage.getItem('dtoPpPD').replace('.', ',') + ' %';
+			intereses_financieros.defaultValue= localStorage.getItem('intFinPD').replace('.', ',') + ' %';
+			Bloqueado.defaultChecked=false;
+
+			devDato("SELECT elt(" + 1 + ", deszona_a, deszona_b, deszona_c, deszona_d) as datoDevuelto from agencias where COD='" + empresa_de_envio.defaultValue + "';", desZonaAgencia, true);			
+
+			cod_cliente.readOnly			= 	false;
+			empresa.readOnly				= 	false;
+			cif.readOnly					= 	false;
+			nombrecomercial.readOnly		= 	false;
+			fecha_antiguedad.readOnly		= 	false;
+			Bloqueado.disabled				= 	false;
+			domicilio.readOnly				= 	false;
+			cod_postal.readOnly				= 	false;
+			poblacion.readOnly				= 	false;
+			provincia.readOnly				= 	false;
+			pais.readOnly					= 	false;
+			persona_contacto.readOnly		= 	false;
+			telefono_1.readOnly				= 	false;
+			telefono_2.readOnly				= 	false;
+			fax.readOnly					= 	false;
+			www.readOnly					= 	false;
+			ce.readOnly						= 	false;
+			n_entidad.readOnly				= 	false;
+			n_oficina.readOnly				= 	false;
+			n_dc.readOnly					= 	false;
+			n_cuenta.readOnly				= 	false;
+			iban.readOnly					= 	false;
+			bic.readOnly					= 	false;
+			refMandatoRemesas.readOnly		= 	false;
+			fechaMandatoRemesas.readOnly	= 	false;
+			desactivarRadio('portes', false);
+			desactivarRadio('forma_de_envio', false);
+			zonaagencia.disabled			= 	false;
+			dto_comercial.readOnly			= 	false;
+			dto_pronto_pago.readOnly		= 	false;
+			intereses_financieros.readOnly	= 	false;
+			dia_de_pago_1.readOnly			= 	false;
+			dia_de_pago_2.readOnly			= 	false;
+			dia_de_pago_3.readOnly			= 	false;
+			mes_no_pago.disabled			= 	false;
+			riesgo_concedido.readOnly		= 	false;
+			TIPO_TARIFA.disabled			= 	false;
+			periodicidad.disabled			= 	false;
+			iva.disabled					= 	false;
+			re.disabled						= 	false;
+			subcuenta.readOnly				= 	false;
+			CodigoProveedor.readOnly		= 	false;
+
+			aceptar.hidden					= 	false;
+      		cancelar.hidden 				= 	false;
+      		ocultarBotones('block');
+
+		}
+
+		if (window.opcionCliente === 2 || window.opcionCliente === 4) {
+
+            $('#tabContactos').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=20&codN=' + window.idTabClientes
+            });
+
+            $('#tabDirEnvios').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=320&codN=' + window.idTabClientes
+            });
+
+            $('#tabContactosComerciales').bootstrapTable('refresh', {
+            	url: './php/datosSubform.php?nConsulta=620&codN=' + window.idTabClientes
+            });
+
+
+			let queries2 = "select cod_cliente_n, cod_cliente, empresa, nombrecomercial, cif, DATE_FORMAT(fecha_antiguedad,'%Y-%m-%d') as alta, zona, domicilio, cod_postal, poblacion, provincia, pais, telefono_1, telefono_2, fax, ce, www, persona_contacto, LPAD(`N_ENTIDAD`, 4, 0) AS `n_entidad`, LPAD(`N_OFICINA`, 4, 0) AS `n_oficina`, LPAD(`N_DC`, 2, 0) AS `n_dc`, LPAD(CAST(`N_CUENTA` AS DECIMAL(10,0)), 10, 0) AS `n_cuenta`, iban, bic, COD_REMESA, divisa, forma_de_pago, dia_de_pago_1, dia_de_pago_2, dia_de_pago_3, mes_no_pago, round(dto_comercial * 100, 2) as dto_comercial1, round(dto_pronto_pago * 100, 2) as dto_pronto_pago1, round(intereses_financieros * 100, 2) as intereses_financieros1, TIPO_ATENCION, TIPO_TARIFA, COD_AGENTE_N, PERIODICIDAD, Bloqueado, `CódigoProveedor` as CodigoProveedor, `CódigoGrupoCliente` as CodigoGrupoCliente, zonaagencia, refMandatoRemesas,  DATE_FORMAT(fechaMandatoRemesas,'%Y-%m-%d') as fecha1, subcuenta, observaciones, comentario, periodicidad, riesgo_concedido, iva, re, forma_de_envio, portes, empresa_de_envio, COD_AGENTE_N from clientes where cod_cliente_n= " + window.idTabClientes + ";";
+			queries2    += "SELECT a.descripcion as desFP from forma_de_pago a inner join clientes b on a.cod=b.forma_de_pago where b.cod_cliente_n=" + window.idTabClientes + ";";
+			queries2    += "SELECT a.nombre as nomDivisa from divisas a inner join clientes b on a.cod_divisa=b.divisa where b.cod_cliente_n=" + window.idTabClientes + ";";
+			queries2    += "SELECT a.descripcion as desZona from zonas a right join clientes b on a.cod=b.zona where b.cod_cliente_n=" + window.idTabClientes + ";";	
+			queries2    += "SELECT a.cod_agente as codAgente, a.nombre as nomAgente from agentes a right join clientes b on a.cod_agente_n=b.COD_AGENTE_N where b.cod_cliente_n=" + window.idTabClientes + ";";
+			queries2    += "SELECT a.Descripción as desGrupoCliente from gruposclientes a right join clientes b on a.Código=b.CódigoGrupoCliente where b.cod_cliente_n=" + window.idTabClientes + ";";
+			queries2    += "SELECT a.Descripcion as desCtaRemesa from ctasremesas a right join clientes b on a.Cod=b.COD_REMESA where b.cod_cliente_n=" + window.idTabClientes + ";";
+			queries2    += "SELECT a.DESCRIPCION as nomAgencia, elt(b.zonaagencia, a.deszona_a, a.deszona_b, a.deszona_c, a.deszona_d) as desZonaAgencia from agencias a right join clientes b on a.COD=b.empresa_de_envio where b.cod_cliente_n=" + window.idTabClientes + ";";
+
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 0);
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+
+				ccn.defaultValue=						data[0].cod_cliente_n;
+                cod_cliente.defaultValue =       	  	data[0].cod_cliente;
+				empresa.defaultValue =             	  	data[0].empresa;
+				nombrecomercial.defaultValue =     	  	data[0].nombrecomercial || '';
+				cif.defaultValue =                 	  	data[0].cif || '';
+				fecha_antiguedad.defaultValue =    	  	data[0].alta;
+				COD_AGENTE_N.defaultValue =				data[0].COD_AGENTE_N;
+				domicilio.defaultValue =           	  	data[0].domicilio || '';
+				cod_postal.defaultValue =          	  	data[0].cod_postal || '';
+				poblacion.defaultValue =           	  	data[0].poblacion || '';
+				provincia.defaultValue =           	  	data[0].provincia || '';
+				pais.defaultValue =                	  	data[0].pais || '';
+				telefono_1.defaultValue =          	  	data[0].telefono_1 || '';
+				telefono_2.defaultValue =          	  	data[0].telefono_2 || '';
+				fax.defaultValue =                	  	data[0].fax || '';
+				ce.defaultValue =                  	  	data[0].ce || '';
+				www.defaultValue =                 	  	data[0].www || '';
+				persona_contacto.defaultValue = 	  	data[0].persona_contacto || '';
+				n_entidad.defaultValue =           	  	data[0].n_entidad;
+				n_oficina.defaultValue =           	  	data[0].n_oficina;
+				n_dc.defaultValue =                	  	data[0].n_dc;
+				n_cuenta.defaultValue =            	  	data[0].n_cuenta;
+				iban.defaultValue =                	  	data[0].iban || '';
+				bic.defaultValue =                 	  	data[0].bic || '';
+				divisa.defaultValue =              	  	data[0].divisa;
+				forma_de_pago.defaultValue =       	  	data[0].forma_de_pago;
+				dia_de_pago_1.defaultValue =       	  	data[0].dia_de_pago_1;
+				dia_de_pago_2.defaultValue =       	  	data[0].dia_de_pago_2;
+				dia_de_pago_3.defaultValue =       	  	data[0].dia_de_pago_3;
+				subcuenta.defaultValue =           	  	data[0].subcuenta || '';
+				observaciones.defaultValue =       	  	data[0].observaciones || '';
+				comentario.defaultValue =       	  	data[0].comentario || '';
+				empresa_de_envio.defaultValue =         data[0].empresa_de_envio || '';
+				nombreAgencia.defaultValue =			data[7].nomAgencia || '';
+				desZonaAgencia.defaultValue =			data[7].desZonaAgencia || '';
+				formaPagoDes.defaultValue =        	  	data[1].desFP || '';
+				divisaNom.defaultValue =           	  	data[2].nomDivisa || '';
+				COD_REMESA.defaultValue =           	data[0].COD_REMESA || '';
+				desCtaRemesa.defaultValue =           	data[6].desCtaRemesa || '';
+				refMandatoRemesas.defaultValue =		data[0].refMandatoRemesas || '';
+				fechaMandatoRemesas.defaultValue =		data[0].fecha1;
+				codAgente.defaultValue =				data[4].codAgente || '';
+				nomAgente.defaultValue =				data[4].nomAgente || '';
+				COD_AGENTE_N.defaultValue =				data[0].COD_AGENTE_N;
+				CodigoGrupoCliente.defaultValue =       data[0].CodigoGrupoCliente || '';
+				desGrupoCliente.defaultValue =       	data[5].desGrupoCliente || '';
+				zona.defaultValue=             			data[0].zona || '';
+				zonaDes.defaultValue=             		data[3].desZona || '';
+				CodigoProveedor.defaultValue=           data[0].CodigoProveedor || '';
+				riesgo_concedido.defaultValue =         formatoNum(parseFloat(data[0].riesgo_concedido), window.decImpDivPred, ',', '.', window.abrevDivPred);
+				riesgoAlcanzado.defaultValue =          formatoNum(0, window.decImpDivPred, ',', '.', window.abrevDivPred);
+				Deposito.defaultValue =        		  	formatoNum(0, window.decImpDivPred, ',', '.', window.abrevDivPred);
+				dto_comercial.defaultValue =       	  	parseFloat(data[0].dto_comercial1).toFixed(2).replace('.', ',') + ' %';
+				dto_pronto_pago.defaultValue =          parseFloat(data[0].dto_pronto_pago1).toFixed(2).replace('.', ',') + ' %';
+				intereses_financieros.defaultValue =	parseFloat(data[0].intereses_financieros1).toFixed(2).replace('.', ',') + ' %';
+				seleccionarRadio('portes', data[0].portes);
+				seleccionarRadio('forma_de_envio', data[0].forma_de_envio);			
+			  	seleccionarCombo('mes_no_pago', data[0].mes_no_pago);
+			  	seleccionarCombo('iva', data[0].iva);								  
+			  	seleccionarCombo('periodicidad', data[0].periodicidad);
+			  	seleccionarCombo('zonaagencia', data[0].zonaagencia);
+			  	seleccionarCombo('TIPO_TARIFA', data[0].TIPO_TARIFA);
+				re.defaultValue=data[0].re;
+				if (data[0].re == 0) { re.defaultChecked = false; } else { re.defaultChecked = true; }
+			  	Bloqueado.defaultValue=data[0].Bloqueado;
+			  	if (data[0].Bloqueado == 0) { Bloqueado.defaultChecked = false; } else { Bloqueado.defaultChecked = true; }		
+			  	devDato("SELECT NOMBRE_ENTIDAD as datoDevuelto from bancos where N_ENTIDAD=" + parseInt(data[0].n_entidad) + " limit 1;", nombreBanco, true);
+
+				if (window.opcionCliente === 2) {
+					cod_cliente.readOnly			= 	true;
+					empresa.readOnly				= 	false;
+					cif.readOnly					= 	false;
+					nombrecomercial.readOnly		= 	false;
+					fecha_antiguedad.readOnly		= 	false;
+					Bloqueado.disabled				= 	false;
+					domicilio.readOnly				= 	false;
+					cod_postal.readOnly				= 	false;
+					poblacion.readOnly				= 	false;
+					provincia.readOnly				= 	false;
+					pais.readOnly					= 	false;
+					persona_contacto.readOnly		= 	false;
+					telefono_1.readOnly				= 	false;
+					telefono_2.readOnly				= 	false;
+					fax.readOnly					= 	false;
+					www.readOnly					= 	false;
+					ce.readOnly						= 	false;
+					n_entidad.readOnly				= 	false;
+					n_oficina.readOnly				= 	false;
+					n_dc.readOnly					= 	false;
+					n_cuenta.readOnly				= 	false;
+					iban.readOnly					= 	false;
+					bic.readOnly					= 	false;
+					refMandatoRemesas.readOnly		= 	false;
+					fechaMandatoRemesas.readOnly	= 	false;
+					desactivarRadio('portes', false);
+					desactivarRadio('forma_de_envio', false);
+					zonaagencia.disabled			= 	false;
+					dto_comercial.readOnly			= 	false;
+					dto_pronto_pago.readOnly		= 	false;
+					intereses_financieros.readOnly	= 	false;
+					dia_de_pago_1.readOnly			= 	false;
+					dia_de_pago_2.readOnly			= 	false;
+					dia_de_pago_3.readOnly			= 	false;
+					mes_no_pago.disabled			= 	false;
+					riesgo_concedido.readOnly		= 	false;
+					TIPO_TARIFA.disabled			= 	false;
+					periodicidad.disabled			= 	false;
+					iva.disabled					= 	false;
+					re.disabled						= 	false;
+					subcuenta.readOnly				= 	false;
+					CodigoProveedor.readOnly		= 	false;
+
+					aceptar.hidden					= 	false;
+		      		cancelar.hidden 				= 	false;
+					ocultarBotones('block');		      		
+				}		
+
+				if (window.opcionCliente === 4) {
+
+					cod_cliente.readOnly			= 	true;
+					empresa.readOnly				= 	true;
+					cif.readOnly					= 	true;
+					nombrecomercial.readOnly		= 	true;
+					fecha_antiguedad.readOnly		= 	true;
+					Bloqueado.disabled				= 	true;
+					domicilio.readOnly				= 	true;
+					cod_postal.readOnly				= 	true;
+					poblacion.readOnly				= 	true;
+					provincia.readOnly				= 	true;
+					pais.readOnly					= 	true;
+					persona_contacto.readOnly		= 	true;
+					telefono_1.readOnly				= 	true;
+					telefono_2.readOnly				= 	true;
+					fax.readOnly					= 	true;
+					www.readOnly					= 	true;
+					ce.readOnly						= 	true;
+					n_entidad.readOnly				= 	true;
+					n_oficina.readOnly				= 	true;
+					n_dc.readOnly					= 	true;
+					n_cuenta.readOnly				= 	true;
+					iban.readOnly					= 	true;
+					bic.readOnly					= 	true;
+					refMandatoRemesas.readOnly		= 	true;
+					fechaMandatoRemesas.readOnly	= 	true;
+					desactivarRadio('portes', true);
+					desactivarRadio('forma_de_envio', true);
+					zonaagencia.disabled			= 	true;
+					dto_comercial.readOnly			= 	true;
+					dto_pronto_pago.readOnly		= 	true;
+					intereses_financieros.readOnly	= 	true;
+					dia_de_pago_1.readOnly			= 	true;
+					dia_de_pago_2.readOnly			= 	true;
+					dia_de_pago_3.readOnly			= 	true;
+					mes_no_pago.disabled			= 	true;
+					riesgo_concedido.readOnly		= 	true;
+					TIPO_TARIFA.disabled			= 	true;
+					periodicidad.disabled			= 	true;
+					iva.disabled					= 	true;
+					re.disabled						= 	true;
+					subcuenta.readOnly				= 	true;
+					CodigoProveedor.readOnly		= 	true;
+
+					aceptar.hidden					= 	true;
+		      		cancelar.hidden 				= 	true;
+		      		ocultarBotones('none');
+
+				}				
+
+			})
+		}
+
+		document.getElementById('formCliente').reset();
+
+	})
+
+
+	modalCliente.addEventListener('hide.bs.modal', function (e) {
+		if (window.noCerrarModal == '1') {
+			window.noCerrarModal = '0';
+			e.preventDefault();
+	     	e.stopImmediatePropagation();
+	     	return false;
+		}
+	})
+
+
+
+	formCliente.onsubmit = async (e) => {
+
+		e.preventDefault();
+
+        let sMask1 					= riesgo_concedido.value;
+        let numSinMascara 			= quitarMascara(sMask1, ',');
+        riesgo_concedido.value 		= numSinMascara;
+
+        sMask1 						= dto_comercial.value;
+        numSinMascara 				= quitarMascara(sMask1, ',');
+        dto_comercial.value 		= numSinMascara;
+
+        sMask1 						= dto_pronto_pago.value;
+        numSinMascara 				= quitarMascara(sMask1, ',');
+        dto_pronto_pago.value 		= numSinMascara;
+
+        sMask1 						= intereses_financieros.value;
+        numSinMascara 				= quitarMascara(sMask1, ',');
+        intereses_financieros.value = numSinMascara;
+
+		n_entidad.value   			= parseInt(n_entidad.value);
+		n_oficina.value   			= parseInt(n_oficina.value);
+		n_dc.value   				= parseInt(n_dc.value);
+		n_cuenta.value   			= parseInt(n_cuenta.value);
+
+
+        let sDeleteContactos = '';
+        let sInsertContactos = '';
+        let sUpdateContactos = '';
+
+        //delete contactos
+        let numFilas2 = Object.keys(window.contactosEliminar).length;
+        if (numFilas2 != 0) {
+            for (i = 0; i < numFilas2; i++) {
+                if (sDeleteContactos === '') {
+                    sDeleteContactos = " nombre='" + window.contactosEliminar[i] + "'";
+                } else {
+                    sDeleteContactos += " or nombre='" + window.contactosEliminar[i] + "'";
+                }
+            }
+        }
+
+        //insert into y update contactos
+        let numFilas3 = Object.keys($("#tabContactos").bootstrapTable('getData')).length;
+        if (numFilas3 != 0) {
+            for (i = 0; i < numFilas3; i++) {
+                f = $("#tabContactos").bootstrapTable('getData')[i];
+                //insert into
+               	if (f.tip1 === '1') {
+                    if (sInsertContactos != '') { sInsertContactos += ','; }
+                    sInsertContactos += "('codClieNaSustituir', '" + f.Nombre + "','" + f.Departamento + "','" + f.Cargo + "','" + f.Móvil + "','" + f.Teléfono + "','" + f.Fax + "','" + f.Email + "','" + f.Horario + "','" + f.Notas + "')";
+                }
+                //update
+                if (f.tip1 === '2') {
+                    sUpdateContactos += "update clientescontactos set Departamento='" + f.Departamento + "', Cargo='" + f.Cargo + "', `Móvil`='" + f.Móvil + "', `Teléfono`='" + f.Teléfono + "', Fax='" + f.Fax + "', `E-mail`='" + f.Email + "', Horario='" + f.Horario + "', Notas='" + f.Notas + "', contTab = contTab + 1 where cod_cliente_n=" + codClienteNficha + " and Nombre='" + f.Nombre + "';";
+                }                      
+            }
+        }
+
+
+        let sDeleteDirEnvios = '';
+        let sInsertDirEnvios = '';
+        let sUpdateDirEnvios = '';
+
+        //delete direcciones de envío
+        let numFilas4 = Object.keys(window.dirEnviosEliminar).length;
+        if (numFilas4 != 0) {
+            for (i = 0; i < numFilas4; i++) {
+                if (sDeleteDirEnvios === '') {
+                    sDeleteDirEnvios = " `núm`=" + window.dirEnviosEliminar[i];
+                } else {
+                    sDeleteDirEnvios += " or `núm`=" + window.dirEnviosEliminar[i];
+                }
+            }
+        }                
+
+        //insert into y update direcciones de envío
+        let numFilas5 = Object.keys($("#tabDirEnvios").bootstrapTable('getData')).length;
+        if (numFilas5 != 0) {
+        	var porDef = 0;
+            for (i = 0; i < numFilas5; i++) {
+                f = $("#tabDirEnvios").bootstrapTable('getData')[i];
+                if (f.PorDefecto === 'Sí') { porDef = -1; } else { porDef = 0; }
+                //insert into
+                if (f.tip2 === '1') {
+                    if (sInsertDirEnvios != '') { sInsertDirEnvios += ','; }
+                    sInsertDirEnvios += "('codClieNaSustituir', " + f.num + ", '" + f.NombreD + "','" + f.Dirección + "','" + f.CodPosD + "','" + f.Población + "','" + f.Provincia + "','" + f.País + "','" + f.PersonaContactoD + "','" + f.Teléfono1D + "','" + f.Teléfono2D + "','" + f.FaxD + "','" + f.EmailD + "', " + f.ZonaAgenciaD + ", " + porDef + ")";
+                }
+                //update
+                if (f.tip2 === '2') {
+                	sUpdateDirEnvios += "update envios set Nombre='" + f.NombreD + "', DOMICILIO='" + f.Dirección + "', COD_POSTAL='" + f.CodPosD + "', POBLACION='" + f.Población + "', PROVINCIA='" + f.Provincia + "', PAIS='" + f.País + "', PERSONA_CONTACTO='" + f.PersonaContactoD + "', TELEFONO_1='" + f.Teléfono1D + "', TELEFONO_2='" + f.Teléfono2D + "', FAX='" + f.FaxD + "', CE='" + f.EmailD + "', zonaagencia=" + f.ZonaAgenciaD + ", predeterminado=" + porDef + ", contTab = contTab + 1 where cod_cliente_n=" + codClienteNficha + " and núm=" + f.num + ";";
+                }  
+         
+        	}
+    	}
+
+
+        let sDeleteConComerciales = '';
+        let sInsertConComerciales = '';
+        let sUpdateConComerciales = '';
+
+        //delete contactos comerciales
+        let numFilas6 = Object.keys(window.contactosComercialesEliminar).length;
+        if (numFilas6 != 0) {
+            for (i = 0; i < numFilas6; i++) {
+                if (sDeleteConComerciales === '') {
+                    sDeleteConComerciales = " FechaHora='" + window.contactosComercialesEliminar[i] + "'";
+                } else {
+                    sDeleteConComerciales += " or FechaHora='" + window.contactosComercialesEliminar[i] + "'";
+                }
+            }
+        }            
+
+        //insert into y update contactos comerciales
+        let numFilas7 = Object.keys($("#tabContactosComerciales").bootstrapTable('getData')).length;
+        if (numFilas7 != 0) {
+            for (i = 0; i < numFilas7; i++) {
+                f = $("#tabContactosComerciales").bootstrapTable('getData')[i];
+                //insert into
+                if (f.tip3 === '1') {
+                    if (sInsertConComerciales != '') { sInsertConComerciales += ','; }
+                    sInsertConComerciales += "('codClieNaSustituir', '" + sustituirT(f.fec3) + "','" + f.asu3 + "','" + f.des3 + "','" + f.res3 + "')";
+                }
+                //update
+                if (f.tip3 === '2') {
+                    sUpdateConComerciales += "update contactoscomerciales set Asunto='" + f.asu3 + "', Desarrollo='" + f.des3 + "', Resultado='" + f.res3 + "', contTab = contTab + 1 where cod_cliente_n=" + codClienteNficha + " and FechaHora='" + sustituirT(f.fec3) + "';";
+                }                      
+            }
+        }	
+
+
+		var fila2 = {
+			ccn:  			ccn.value,
+			cod: 			cod_cliente.value,
+			nom: 			empresa.value,
+			noc: 			nombrecomercial.value,
+			nif: 			cif.value,
+			zod: 			zonaDes.value,
+			gcd: 			desGrupoCliente.value,
+			tta: 			TIPO_TARIFA.value,
+			cpo: 			cod_postal.value,
+			pob: 			poblacion.value,
+			pro: 			provincia.value,
+			pai: 			pais.value,
+			per:			persona_contacto.value,
+			te1: 			telefono_1.value,
+			te2: 			telefono_2.value,
+            cor:            ce.value,
+            www:            www.value,
+            age:            nomAgente.value,
+            por:            dValorRadio('portes'),
+            foe:            dValorRadio('forma_de_envio'),
+            agd:            nombreAgencia.value,
+            din:            divisaNom.value,
+            fpd:            formaPagoDes.value,
+            fac:            periodicidad.value,
+            sub:            subcuenta.value,
+            reg:            iva.value,
+            rec:            re.value,
+            alt:            fecha_antiguedad.value,
+            blo:            Bloqueado.value            
+	    };
+
+        async function datosDevueltos1() {
+        	let formData1 = new FormData(formCliente);
+			formData1.append('esBDempresas', 0);
+			formData1.append('opcionListado', window.opcionCliente);        	
+            formData1.append('re', re.value);
+            formData1.append('Bloqueado', Bloqueado.value);
+        	formData1.append('portes', dValorRadio('portes'));
+        	formData1.append('forma_de_envio', dValorRadio('forma_de_envio'));
+            formData1.append('deleteContactos', sDeleteContactos);
+            formData1.append('insertContactos', sInsertContactos);
+            formData1.append('updateContactos', sUpdateContactos);
+            formData1.append('deleteDirEnvios', sDeleteDirEnvios);
+            formData1.append('insertDirEnvios', sInsertDirEnvios);
+            formData1.append('updateDirEnvios', sUpdateDirEnvios); 
+            formData1.append('deleteConComerciales', sDeleteConComerciales);
+            formData1.append('insertConComerciales', sInsertConComerciales);
+            formData1.append('updateConComerciales', sUpdateConComerciales);
+            const response1 = await fetch('php/cliente.php', {
+                method: 'POST',
+                body:   formData1
+            });
+            const data1 = await response1.json();
+            return data1;
+        };
+	    datosDevueltos1().then((data1) => {
+	    	let $table = $('#tabClientes');
+	    	if (data1.toString().substring(0, 4) == 'codN') {
+	    		$('#modalCliente').modal('hide');
+	    		fila2.ccn = data1.toString().substring(4);
+				window.idTabClientes = fila2.ccn;
+ 				$table.bootstrapTable('append', fila2);
+ 				refrescar (1);
+ 			} else if (data1 == '0') {
+ 				$('#modalCliente').modal('hide');
+				$table.bootstrapTable('updateByUniqueId', {
+	  				id: 		window.idTabClientes,
+	  				row: 		fila2,
+		        	replace: 	false
+				});
+			} else if (data1 == '1') {
+				cod_cliente.focus();
+				msjClientes.innerHTML 	= 'Código ya existente';
+				let myModalNuevo1 		= new bootstrap.Modal(dialogoClientes);
+				myModalNuevo1.show();
+			} else if (data1 == '2') {
+				empresa.focus();
+				msjClientes.innerHTML 	= 'Nombre ya existente';
+				let myModalNuevo2 		= new bootstrap.Modal(dialogoClientes);
+				myModalNuevo2.show();
+			} else {
+				msjClientes.innerHTML	= data1;
+				let myModalNuevo3 		= new bootstrap.Modal(dialogoClientes);
+				myModalNuevo3.show();
+			}
+	    }).catch(error => {
+			alert(error.message);
+	    })			
+		    
+	}
+
+	zonaagencia.addEventListener			('change', 	(event) => {
+		devDato("SELECT elt(" + zonaagencia.value + ", deszona_a, deszona_b, deszona_c, deszona_d) as datoDevuelto from agencias where COD='" + empresa_de_envio.value + "';", desZonaAgencia, false);
+	});	
+
+	n_entidad.addEventListener				('blur', 	(event) => { 
+		n_entidad.value 	= cadenaCeros(n_entidad.value,  4);	
+		devDato("SELECT NOMBRE_ENTIDAD as datoDevuelto from bancos where N_ENTIDAD=" + parseInt(n_entidad.value) + " limit 1;", nombreBanco, false);
+	});
+	n_oficina.addEventListener				('blur', 	(event) => { n_oficina.value 	= cadenaCeros(n_oficina.value,  4); });
+	n_dc.addEventListener					('blur', 	(event) => { n_dc.value 		= cadenaCeros(n_dc.value,  2);  	});
+	n_cuenta.addEventListener				('blur', 	(event) => { n_cuenta.value 	= cadenaCeros(n_cuenta.value, 10);  });	
+
+	re.addEventListener						('click', 	(event) => { if (re.checked) 		{ re.value = -1; } 			else { re.value = 0; } });
+	Bloqueado.addEventListener				('click', 	(event) => { if (Bloqueado.checked) { Bloqueado.value = -1; } 	else { Bloqueado.value = 0; } });
+
+	dto_comercial.addEventListener			('focus', 	(event) => { porcentajeFocus(dto_comercial.value); 					});
+	dto_comercial.addEventListener			('blur', 	(event) => { porcentajeBlur ('dto_comercial'); 						});	
+	dto_pronto_pago.addEventListener		('focus', 	(event) => { porcentajeFocus(dto_pronto_pago.value); 				});
+	dto_pronto_pago.addEventListener		('blur', 	(event) => { porcentajeBlur ('dto_pronto_pago'); 					});	
+	intereses_financieros.addEventListener	('focus', 	(event) => { porcentajeFocus(intereses_financieros.value); 			});
+	intereses_financieros.addEventListener	('blur', 	(event) => { porcentajeBlur ('intereses_financieros'); 				});		
+
+	riesgo_concedido.addEventListener		('focus', 	(event) => { window.sMask1ant = riesgo_concedido.value;  });
+	riesgo_concedido.addEventListener		('blur', 	(event) => { 
+		let sMask1 = riesgo_concedido.value;
+		if (sMask1 != window.sMask1ant) {
+			let numSinMascara = quitarMascara(sMask1, ',');
+			riesgo_concedido.value=formatoNum(numSinMascara, window.decImpDivPred, ',', '.', window.abrevDivPred);
+		}
+	});
+
+</script>
+
+
+
+<!-- Comienzo modal columnas visibles -->
+<div class="modal fade modal-dialog-scrollable" id="modalColumnasTablasClientes" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title">Columnas a mostrar</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+            	<form>
+            		<div class="form-group" id="listFields">
+                	</div>
+            	</form>
+            </div>
+        </div>
+    </div>
+
+<script>
+	modalColumnasTablasClientes.addEventListener('show.bs.modal', function (e) {
+		crearListadoNombresColumnas('modalColumnasTablasClientes');
+	})
+</script>
+
+</div>
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoClientes" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">GestiónPYME</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjClientes">No se puede eliminar el cliente por defecto</p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+</div>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarCliente" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header bg-light">
+			  	<h5 class="modal-title">Cliente</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>       
+			<!-- Modal body -->
+			<div class="modal-body">
+		        <form id="formDel">
+		          	<div class="form-group mb-2">
+		            	<input type="text" name="codE" id="codE" size=15 maxlength=15 readonly class="form-control" title="Código del cliente" data-toggle="tooltip">
+		          	</div>
+		          	<div class="form-group">
+		            	<input type="text" name="nomE" id="nomE" size=60 maxlength=60 readonly class="form-control" title="Nombre del cliente" data-toggle="tooltip">
+		        	</div>
+		        </form>
+		     </div>
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar cliente? </p>  
+		        </div>
+		        <button type="button" class="btn btn-primary" id="SiEliminarCliente" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarCliente" data-bs-dismiss="modal">No</button>
+	        </div>
+<script>
+    $('#SiEliminarCliente').on('click', function(event) {
+		let formData3 = new FormData();
+		formData3.append('esBDempresas', 0);
+		formData3.append("ccn", window.idTabClientes);
+		formData3.append("opcionListado", 3);
+		async function eliminaCliente() {
+			const response3 = await fetch('php/cliente.php', {
+	      		method: 'POST',
+	      		body: 	formData3,
+	    	});
+			const data3 = await response3.json();
+			return data3;
+		}
+		eliminaCliente().then((data3) => {
+			let eliCliente = eliminarReg('tabClientes', 'idTabClientes', 'ccn', '');
+			refrescar(1);				
+		}).catch(error => {
+			alert(error.message);
+		});
+    });
+</script>
+    	</div>
+  	</div>  
+</div>
+
+
+
+<!-- Comienzo modal form contacto cliente -->
+<div class="modal fade" id="modalContactoCliente" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+     <div class="modal-content border-2 border-secondary rounded-3">
+      <!-- Modal Header -->
+    	<div class="modal-header bg-dark bg-opacity-50 bg-gradient sticky-top">
+      	<div class="col-6">
+          <a class="navbar-brand text-white" id="titulo">Contacto</a>
+        </div>
+				<div class="col-auto">
+					<form id="formContactoCliente">
+					<input type="hidden" name="tip1" id="tip1">
+					<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar1" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+					<button type="reset"  class="btn btn-warning btn-sm" id="cancelar1" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>
+				</div>
+				<div class="col-1">
+      		<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+        	</button>
+        </div>
+			</div>
+
+    	<!-- Modal body -->
+    	<div class="modal-body bg-light">
+        <div class="container-fluid">
+
+					<div class="row gx-3 gy-3 mb-3">
+						<div class="col-auto form-floating">
+							<input type="text" name="Nombre" id="Nombre" size=40 placeholder="Nombre" maxlength="40" required class="form-control" title="Nombre" data-toggle="tooltip">
+							<label for="Nombre">Nombre</label>
+						</div>
+						<div class="col-auto form-floating">
+							<input type="text" name="Departamento" id="Departamento" size=30 placeholder="Departamento" maxlength="30" class="form-control" title="Departamento" data-toggle="tooltip">
+							<label for="Departamento">Departamento</label>
+						</div>
+
+						<div class="col-auto form-floating">
+							<input type="text" name="Cargo" id="Cargo" size=40 placeholder="Cargo" maxlength="40" class="form-control" title="Cargo" data-toggle="tooltip">
+							<label for="Cargo">Cargo</label>
+						</div>
+
+						<div class="col-auto form-floating">
+							<input type="text" name="Horario" id="Horario" size=50 placeholder="Horario" maxlength="50" class="form-control" title="Horario" data-toggle="tooltip">
+							<label for="Horario">Horario</label>
+						</div>						
+					</div>
+
+					<div class="row gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="text" name="Móvil" id="Móvil" placeholder="Móvil" maxlength="25" size=25 class="form-control" title="Móvil" data-toggle="tooltip">
+								<div class="input-group-append">
+									<div class="btn-group">
+  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+  										</button>
+  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+										    <li><a class="dropdown-item" href="#" id="tel1LlamarC"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel1WhatC"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel1smsC"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+										</ul>
+  									</div>
+  								</div>
+  							</div>
+						</div>
+
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="text" name="Teléfono" id="Teléfono" placeholder="Teléfono" maxlength="25" size=25 class="form-control" title="Teléfono" data-toggle="tooltip">
+								<div class="input-group-append">
+									<div class="btn-group">
+  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+  										</button>
+  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+										    <li><a class="dropdown-item" href="#" id="tel2LlamarC"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel2WhatC"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel2smsC"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+										</ul>
+  									</div>
+  								</div>
+  							</div>
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="Fax" id="Fax" size=25 placeholder="Fax" maxlength="25" class="form-control" title="Fax" data-toggle="tooltip">
+						</div>
+
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="email" name="Email" id="Email" placeholder="Correo electrónico" maxlength="50" size=50 class="form-control" title="Correo electrónico" data-toggle="tooltip">
+								<div class="input-group-append">
+								<button type="button" class="btn btn-outline-secondary ml-auto" id="abrirC" title="Enviar un mensaje"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="row gx-3 gy-3">
+
+						<div class="col-auto">
+							<input type="text" name="Notas" id="Notas" size=50 placeholder="Notas" maxlength="50" class="form-control" title="Notas" data-toggle="tooltip">
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+
+	modalContactoCliente.addEventListener('show.bs.modal', function (e) {
+		if (window.opcionContactosCliente === 1) {
+			Nombre.defaultValue       	= '';
+			Departamento.defaultValue 	= '';
+			Cargo.defaultValue       	= '';
+			Móvil.defaultValue       	= '';
+			Teléfono.defaultValue       = '';
+			Fax.defaultValue 			= '';
+			Email.defaultValue       	= '';
+			Horario.defaultValue 		= '';
+			Notas.defaultValue       	= '';			
+			tip1.defaultValue 			= '1';
+
+			Nombre.readOnly           	= false;
+			Departamento.readOnly       = false;
+			Cargo.readOnly           	= false;
+			Móvil.readOnly           	= false;
+			Teléfono.readOnly       	= false;
+			Fax.readOnly           		= false;
+			Email.readOnly           	= false;
+			Horario.readOnly       		= false;
+			Notas.readOnly           	= false;						
+
+			aceptar1.hidden 			= false;
+			cancelar1.hidden 			= false;      
+
+		}
+		if (window.opcionContactosCliente === 2 || window.opcionContactosCliente === 4) {
+			Nombre.defaultValue			= window.nombreC;
+			let indTab1 				= indice(window.nombreC, 'Nombre', 'tabContactos');
+			let datosUs 				= $('#tabContactos').bootstrapTable('getData')[indTab1];
+
+			Departamento.defaultValue 	= datosUs.Departamento || '';
+			Cargo.defaultValue       	= datosUs.Cargo || '';
+			Móvil.defaultValue       	= datosUs.Móvil || '';
+			Teléfono.defaultValue 		= datosUs.Teléfono || '';
+			Fax.defaultValue       		= datosUs.Fax || '';
+			Email.defaultValue       	= datosUs.Email || '';
+			Horario.defaultValue 		= datosUs.Horario || '';
+			Notas.defaultValue       	= datosUs.Notas || '';
+			tip1.defaultValue 			= datosUs.tip1;
+	    }
+
+	    if (window.opcionContactosCliente === 2) {
+			Nombre.readOnly           	= true;
+			Departamento.readOnly       = false;
+			Cargo.readOnly           	= false;
+			Móvil.readOnly           	= false;
+			Teléfono.readOnly       	= false;
+			Fax.readOnly           		= false;
+			Email.readOnly           	= false;
+			Horario.readOnly       		= false;
+			Notas.readOnly           	= false;
+			// si el valor es 1 (añadir) o 2 (editar) no se cambia dicho valor
+			if (tip1.defaultValue == '0') { tip1.defaultValue = '2'; }
+
+			aceptar1.hidden 			= false;
+			cancelar1.hidden 			= false; 						
+		}
+
+	    if (window.opcionContactosCliente === 4) {
+			Nombre.readOnly           	= true;
+			Departamento.readOnly       = true;
+			Cargo.readOnly           	= true;
+			Móvil.readOnly           	= true;
+			Teléfono.readOnly       	= true;
+			Fax.readOnly           		= true;
+			Email.readOnly           	= true;
+			Horario.readOnly       		= true;
+			Notas.readOnly           	= true;
+
+			aceptar1.hidden 			= true;
+			cancelar1.hidden 			= true; 			
+		}
+
+	    document.getElementById('formContactoCliente').reset();
+	})
+
+
+	modalContactoCliente.addEventListener('hide.bs.modal', function (e) {
+		if (window.noCerrarModal == '1') {
+			window.noCerrarModal = '0';
+			e.preventDefault();
+     		e.stopImmediatePropagation();
+     		return false;
+		}
+	})
+
+	modalContactoCliente.addEventListener('hidden.bs.modal', function (e) {
+		formContactoCliente.reset();
+	})
+
+
+	formContactoCliente.onsubmit = async (e) => {
+		e.preventDefault();
+	    var fila2 = {
+			Nombre: 			Nombre.value,
+			Departamento: 		Departamento.value,
+			Cargo: 				Cargo.value,
+			Movil: 				Móvil.value,
+			Telefono: 			Teléfono.value,
+			Fax: 				Fax.value,
+			Email: 				Email.value,
+			Horario: 			Horario.value,
+			Notas: 				Notas.value,					
+			tip1: 				tip1.value
+	    };
+	    if (window.opcionContactosCliente === 1) {
+			window.nombreC = fila2.Nombre;
+			$('#tabContactos').bootstrapTable('append', fila2);
+			let indFila1  	= indice(window.nombreC, 'Nombre', 'tabContactos');
+			let filaSel1    = tabContactos.getElementsByTagName('tr')[indFila1 + 1];
+			$('#tabContactos').bootstrapTable('scrollTo', Math.abs(filaSel1.offsetTop) - 5);
+			$('.success1').removeClass('success1');
+			filaSel1.classList.add('success1');
+	    }
+		if (window.opcionContactosCliente === 2) {
+			$('#tabContactos').bootstrapTable('updateByUniqueId', {
+				id:       	window.nombreC,
+				row:    	fila2,
+				replace: 	false
+			});
+		}
+	    $('#modalContactoCliente').modal('hide');
+	}
+</script> 
+
+
+
+
+
+<!-- Comienzo modal form contacto comercial -->
+<div class="modal fade" id="modalContactoComercial" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  	<div class="modal-dialog modal-lg">
+     	<div class="modal-content border-2 border-secondary rounded-3">
+      		<!-- Modal Header -->
+    		<div class="modal-header bg-dark bg-opacity-50 bg-gradient sticky-top">
+	      		<div class="col-6">
+	          		<a class="navbar-brand text-white" id="titulo">Contacto comercial</a>
+	        	</div>
+				<div class="col-auto">
+					<form id="formContactoComercial">
+					<input type="hidden" name="tip3" id="tip3">
+					<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar3" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+					<button type="reset"  class="btn btn-warning btn-sm" id="cancelar3" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>
+				</div>
+				<div class="col-1">
+	  				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+	    			</button>
+	    		</div>
+			</div>
+	    	<!-- Modal body -->
+	    	<div class="modal-body bg-light">
+	        	<div class="container-fluid">
+					<div class="row gx-3 gy-3">
+						<div class="col-auto">
+							<div class="row gx-1">
+								<div class="col-auto">
+									<label for="fec3" class="col-form-label">Fecha/hora</label>
+								</div>
+								<div class="col-auto">
+									<input type="datetime-local" name="fec3" id="fec3" value="01/06/2021 08:30" step="60" title="Fecha/hora" data-toggle="tooltip" required class="form-control">
+								</div>
+							</div>
+						</div>
+						<div class="col-auto w-100">
+							<textarea name="asu3" id="asu3" placeholder="Asunto" maxlength="250" size=250 class="form-control" title="Asunto" data-toggle="tooltip"></textarea>
+						</div>
+						<div class="col-auto w-100">
+							<textarea name="des3" id="des3" placeholder="Desarrollo" maxlength="250" size=250 class="form-control" title="Desarrollo" data-toggle="tooltip"></textarea>
+						</div>
+						<div class="col-auto w-100">
+							<textarea name="res3" id="res3" placeholder="Resultado" maxlength="250" size=250 class="form-control" title="Resultado" data-toggle="tooltip"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+
+	modalContactoComercial.addEventListener('show.bs.modal', function (e) {
+
+		if (window.opcionContactosComerciales === 1) {
+
+			const now = new Date();
+
+			now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+			fec3.defaultValue = now.toISOString().slice(0, -1).substring(0, 16);
+
+			asu3.defaultValue 			= '';
+			des3.defaultValue     		= '';
+			res3.defaultValue      		= '';
+			tip3.defaultValue 			= '1';
+
+			fec3.readOnly          		= false;
+			asu3.readOnly       		= false;
+			des3.readOnly         		= false;
+			res3.readOnly          		= false;
+
+			aceptar3.hidden 			= false;
+			cancelar3.hidden 			= false;
+
+		}
+		if (window.opcionContactosComerciales === 2 || window.opcionContactosComerciales === 4) {
+			fec3.defaultValue			= window.FechaHoraCC;
+			let indTab1 				= indice(window.FechaHoraCC, 'fec3', 'tabContactosComerciales');
+			let datosUs 				= $('#tabContactosComerciales').bootstrapTable('getData')[indTab1];
+
+			asu3.defaultValue       	= datosUs.asu3 || '';
+			des3.defaultValue     		= datosUs.des3 || '';
+			res3.defaultValue 			= datosUs.res3 || '';
+			tip3.defaultValue 			= datosUs.tip3;
+	    }
+
+	    if (window.opcionContactosComerciales === 2) {
+			fec3.readOnly          		= true;
+			asu3.readOnly       		= false;
+			des3.readOnly         		= false;
+			res3.readOnly          		= false;
+			// si el valor es 1 (añadir) o 2 (editar) no se cambia dicho valor
+			if (tip3.defaultValue == '0') { tip3.defaultValue = '2'; }
+
+			aceptar3.hidden 			= false;
+			cancelar3.hidden 			= false;					
+		}
+
+	    if (window.opcionContactosComerciales === 4) {
+			fec3.readOnly          		= true;
+			asu3.readOnly       		= true;
+			des3.readOnly         		= true;
+			res3.readOnly          		= true;
+
+			aceptar3.hidden 			= true;
+			cancelar3.hidden 			= true;			
+		}
+
+	    document.getElementById('formContactoComercial').reset();
+	})
+
+
+	modalContactoComercial.addEventListener('hide.bs.modal', function (e) {
+		if (window.noCerrarModal == '1') {
+			window.noCerrarModal = '0';
+			e.preventDefault();
+     		e.stopImmediatePropagation();
+     		return false;
+		}
+	})
+
+	modalContactoComercial.addEventListener('hidden.bs.modal', function (e) {
+		formContactoComercial.reset();
+	})
+
+
+	formContactoComercial.onsubmit = async (e) => {
+		e.preventDefault();
+	    var fila2 = {
+			fec3: 		fec3.value,
+			asu3: 		asu3.value,
+			des3: 		des3.value,
+			res3: 		res3.value,
+			tip3: 		tip3.value 
+	    };
+	    
+	    if (window.opcionContactosComerciales === 1) {
+			window.FechaHoraCC = fila2.fec3;
+			$('#tabContactosComerciales').bootstrapTable('append', fila2);
+			let indFila1  	= indice(window.FechaHoraCC, 'fec3', 'tabContactosComerciales');
+			let filaSel1    = tabContactosComerciales.getElementsByTagName('tr')[indFila1 + 1];
+			$('#tabContactosComerciales').bootstrapTable('scrollTo', Math.abs(filaSel1.offsetTop) - 5);
+			$('.success3').removeClass('success3');
+			filaSel1.classList.add('success3');
+	    }
+		if (window.opcionContactosComerciales === 2) {
+			$('#tabContactosComerciales').bootstrapTable('updateByUniqueId', {
+				id:       	window.FechaHoraCC,
+				row:    	fila2,
+				replace: 	false
+			});
+		}
+	    $('#modalContactoComercial').modal('hide');
+	}
+</script> 
+
+
+
+<!-- Comienzo modal form dirección envío -->
+<div class="modal fade" id="modalDirEnvio" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+     <div class="modal-content border-2 border-dark rounded-3">
+      <!-- Modal Header -->
+    	<div class="modal-header bg-dark bg-opacity-50 bg-gradient sticky-top">
+	      	<div class="col-6">
+	          	<a class="navbar-brand text-white" id="titulo">Dirección de envío</a>
+	        </div>
+			<div class="col-auto">
+				<form id="formDirEnvio">
+				<input type="hidden" name="tip2" id="tip2">
+				<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar2" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+				<button type="reset"  class="btn btn-warning btn-sm" id="cancelar2" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem"></i> </button>
+			</div>
+			<div class="col-1">
+  				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+    			</button>
+    		</div>
+		</div>
+
+    	<!-- Modal body -->
+    	<div class="modal-body bg-light">
+        	<div class="container-fluid">
+        		<div class="row gx-3 gy-2 align-items-center mb-3">
+					<div class="col-auto form-floating">
+						<input type="text" name="num" id="num" size=3 required readonly class="form-control" style="text-align:right" title="Número de dirección de envío" data-toggle="tooltip">
+						<label for="num">Número</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="NombreD" id="NombreD" size=40 placeholder="Nombre identificativo de la entrega" maxlength="40" required class="form-control" title="Nombre identificativo de la entrega" data-toggle="tooltip">
+						<label for="NombreD">Nombre identificativo de la entrega</label>
+					</div>					
+					<div class="col-auto">
+						<div class="form-check form-switch">
+						  	<label class="form-check-label">
+						    	<input type="checkbox" name="PorDefecto" id="PorDefecto" class="form-check-input" title="Por defecto" data-toggle="tooltip">Por defecto</label>
+						</div>
+					</div>
+				</div>
+				<div class="row gx-3 gy-3 mb-3">
+					<div class="col-auto form-floating">
+						<input type="text" name="Dirección" id="Dirección" size=50 placeholder="Dirección" maxlength="50" class="form-control" title="Dirección" data-toggle="tooltip">
+						<label for="Dirección">Dirección</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="CodPosD" id="CodPosD" size=5 placeholder="C. P." maxlength="5" class="form-control" title="Código postal" data-toggle="tooltip">
+						<label for="CodPosD">C. P.</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="Población" id="Población" size=30 placeholder="Población" maxlength="30" class="form-control" title="Población" data-toggle="tooltip">
+						<label for="Población">Población</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="Provincia" id="Provincia" size=30 placeholder="Provincia" maxlength="30" class="form-control" title="Provincia" data-toggle="tooltip">
+						<label for="Provincia">Provincia</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="País" id="País" size=30 placeholder="País" maxlength="30" class="form-control" title="País" data-toggle="tooltip">
+						<label for="País">País</label>
+					</div>
+					<div class="col-auto form-floating">
+						<input type="text" name="PersonaContactoD" id="PersonaContactoD" size=40 placeholder="Persona de contacto" maxlength="40" class="form-control" title="Persona de contacto" data-toggle="tooltip">
+						<label for="PersonaContactoD">Persona de contacto</label>
+					</div>
+				</div>
+				<div class="row gx-3 gy-3 mb-3">
+
+					<div class="col-auto">
+						<div class="input-group">
+							<input type="text" name="Teléfono1D" id="Teléfono1D" placeholder="Teléfono 1" maxlength="25" size=25 class="form-control" title="Teléfono 1" data-toggle="tooltip">
+							<div class="input-group-append">
+								<div class="btn-group">
+									<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1D" data-bs-toggle="dropdown" aria-expanded="false">
+									</button>
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1D">
+									    <li><a class="dropdown-item" href="#" id="tel1LlamarD"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+									    <li><a class="dropdown-item" href="#" id="tel1What
+									    	D"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+									    <li><a class="dropdown-item" href="#" id="tel1smsD"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-auto">
+						<div class="input-group">
+							<input type="text" name="Teléfono2D" id="Teléfono2D" placeholder="Teléfono 2" maxlength="25" size=25 class="form-control" title="Teléfono 2" data-toggle="tooltip">
+							<div class="input-group-append">
+								<div class="btn-group">
+									<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2D" data-bs-toggle="dropdown" aria-expanded="false">
+									</button>
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2D">
+									    <li><a class="dropdown-item" href="#" id="tel2LlamarD"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+									    <li><a class="dropdown-item" href="#" id="tel2WhatD"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+									    <li><a class="dropdown-item" href="#" id="tel2smsD"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-auto">
+						<input type="text" name="FaxD" id="FaxD" size=25 placeholder="Fax" maxlength="25" class="form-control" title="Fax" data-toggle="tooltip">
+					</div>
+
+					<div class="col-auto">
+						<div class="input-group">
+							<input type="email" name="EmailD" id="EmailD" placeholder="Correo electrónico" maxlength="50" size=50 class="form-control" title="Correo electrónico" data-toggle="tooltip">
+							<div class="input-group-append">
+							<button type="button" class="btn btn-outline-secondary ml-auto" id="abrirD" title="Enviar un mensaje"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row gx-3 gy-3">
+					<div class="col-auto">
+						<div class="row align-items-end gx-2 gy-1">
+							<div class="col-auto">
+			    				<label for="ZonaAgenciaD">Zona agencia</label>
+		                        <select name="ZonaAgenciaD" id="ZonaAgenciaD" class="form-select" title="Zona del cliente para la agencia de envío" data-toggle="tooltip">
+		                            <option value=1>A</option>
+		                            <option value=2>B</option>
+		                            <option value=3>C</option>
+		                            <option value=4>D</option>
+		                        </select>
+		                    </div>
+							<div class="col-auto">
+								<input type="text" id="DescripciónZonaAgencia" size=50 maxlength="50" readonly class="form-control" title="Descripción de la zona" data-toggle="tooltip">
+							</div>
+		                </div>
+		            </div>
+
+				</div>
+
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+
+	modalDirEnvio.addEventListener('show.bs.modal', function (e) {
+		if (window.opcionDirEnvio === 1) {
+
+			let t = $("#tabDirEnvios").bootstrapTable('getData');
+			let numMasAlto = 0;
+			let totalFilas = Object.keys(t).length;
+			if (totalFilas != 0)  {
+				for (i = 0; i < totalFilas; i++) {
+					if (numMasAlto < parseInt(t[i].num)) {
+						numMasAlto = parseInt(t[i].num);	
+					}
+				}
+			}
+			num.defaultValue 			= numMasAlto + 1;
+
+			PorDefecto.defaultValue		= 0;
+			PorDefecto.defaultChecked	= false;
+			NombreD.defaultValue 		= '';
+			Dirección.defaultValue      = '';
+			CodPosD.defaultValue       	= '';
+			Población.defaultValue      = '';
+			Provincia.defaultValue 		= '';
+			País.defaultValue       	= '';
+			Teléfono1D.defaultValue 	= '';
+			Teléfono2D.defaultValue     = '';
+			FaxD.defaultValue     		= '';
+			EmailD.defaultValue     	= '';
+			PersonaContactoD.defaultValue  = '';
+			seleccionarCombo('ZonaAgenciaD', '1');
+			devDato("SELECT elt(" + 1 + ", deszona_a, deszona_b, deszona_c, deszona_d) as datoDevuelto from agencias where COD='" + empresa_de_envio.value + "';", DescripciónZonaAgencia, true);
+			tip2.defaultValue 			= '1';
+
+			PorDefecto.disabled			= false;
+			NombreD.readOnly       		= false;
+			Dirección.readOnly          = false;
+			CodPosD.readOnly           	= false;
+			Población.readOnly       	= false;
+			Provincia.readOnly          = false;
+			País.readOnly           	= false;
+			Teléfono1D.readOnly       	= false;
+			Teléfono2D.readOnly         = false;						
+			FaxD.readOnly         		= false;
+			EmailD.readOnly         	= false;
+			PersonaContactoD.readOnly   = false;
+			ZonaAgenciaD.disabled       = false;
+			aceptar2.hidden 			= false;
+			cancelar2.hidden 			= false;      
+
+		}
+		if (window.opcionDirEnvio === 2 || window.opcionDirEnvio === 4) {
+			num.defaultValue			= window.numD;
+			let indTab1 				= indice(window.numD, 'num', 'tabDirEnvios');
+			let datosUs 				= $('#tabDirEnvios').bootstrapTable('getData')[indTab1];
+			PorDefecto.defaultChecked 	= devBool(datosUs.PorDefecto);
+			NombreD.defaultValue 		= datosUs.NombreD || '';
+			Dirección.defaultValue      = datosUs.Dirección || '';
+			CodPosD.defaultValue       	= datosUs.CodPosD || '';
+			Población.defaultValue 		= datosUs.Población || '';
+			Provincia.defaultValue      = datosUs.Provincia || '';
+			País.defaultValue       	= datosUs.País || '';
+			Teléfono1D.defaultValue 	= datosUs.Teléfono1D || '';
+			Teléfono2D.defaultValue     = datosUs.Teléfono2D || '';
+			FaxD.defaultValue       	= datosUs.FaxD || '';
+			EmailD.defaultValue       	= datosUs.EmailD || '';
+			PersonaContactoD.defaultValue  = datosUs.PersonaContactoD || '';
+			seleccionarCombo('ZonaAgenciaD', datosUs.ZonaAgenciaD);
+			devDato("SELECT elt(" + datosUs.ZonaAgenciaD + ", deszona_a, deszona_b, deszona_c, deszona_d) as datoDevuelto from agencias where COD='" + empresa_de_envio.value + "';", DescripciónZonaAgencia, true);
+			DescripciónZonaAgencia.defaultValue = '';
+			tip2.defaultValue 			= datosUs.tip2;
+	    }
+
+	    if (window.opcionDirEnvio === 2) {
+			PorDefecto.disabled			= false;
+			NombreD.readOnly       		= false;
+			Dirección.readOnly          = false;
+			CodPosD.readOnly           	= false;
+			Población.readOnly       	= false;
+			Provincia.readOnly          = false;
+			País.readOnly           	= false;
+			Teléfono1D.readOnly       	= false;
+			Teléfono2D.readOnly         = false;
+			FaxD.readOnly         		= false;
+			EmailD.readOnly         	= false;
+			PersonaContactoD.readOnly   = false;
+			ZonaAgenciaD.disabled       = false;
+			// si el valor es 1 (añadir) o 2 (editar) no se cambia dicho valor
+			if (tip2.defaultValue == '0') { tip2.defaultValue = '2'; }
+
+			aceptar2.hidden 			= false;
+			cancelar2.hidden 			= false; 						
+		}
+
+	    if (window.opcionDirEnvio === 4) {
+			PorDefecto.disabled			= true;
+			NombreD.readOnly       		= true;
+			Dirección.readOnly          = true;
+			CodPosD.readOnly           	= true;
+			Población.readOnly       	= true;
+			Provincia.readOnly          = true;
+			País.readOnly		       	= true;
+			Teléfono1D.readOnly       	= true;
+			Teléfono2D.readOnly         = true;
+			FaxD.readOnly         		= true;
+			EmailD.readOnly         	= true;
+			PersonaContactoD.readOnly   = true;
+			ZonaAgenciaD.disabled       = true;
+			aceptar2.hidden 			= true;
+			cancelar2.hidden 			= true; 			
+		}
+
+	    document.getElementById('formDirEnvio').reset();
+	})
+
+
+
+	modalDirEnvio.addEventListener('hide.bs.modal', function (e) {
+		if (window.noCerrarModal == '1') {
+			window.noCerrarModal = '0';
+			e.preventDefault();
+     		e.stopImmediatePropagation();
+     		return false;
+		}
+	})
+
+	modalDirEnvio.addEventListener('hidden.bs.modal', function (e) {
+		formDirEnvio.reset();
+	})
+
+
+	formDirEnvio.onsubmit = async (e) => {
+		e.preventDefault();
+	    var fila2 = {
+			num: 				num.value,
+			NombreD: 			NombreD.value,
+			PorDefecto:			PorDefecto.value,
+			Dirección: 			Dirección.value,
+			CodPosD: 			CodPosD.value,
+			Población: 			Población.value,
+			Provincia: 			Provincia.value,
+			País: 				País.value,
+			Teléfono1D: 		Teléfono1D.value,
+			Teléfono2D: 		Teléfono2D.value,
+			FaxD:  				FaxD.value,
+			EmailD:   			EmailD.value,
+			PersonaContactoD:   PersonaContactoD.value,
+			ZonaAgenciaD:  		ZonaAgenciaD.value,						
+			tip2: 				tip2.value
+	    };
+	    if (window.opcionDirEnvio === 1) {
+			window.numD = fila2.num;
+			$('#tabDirEnvios').bootstrapTable('append', fila2);
+			if (PorDefecto.value == -1) { revisarPredDirEnvio(); }
+			let indFila1  	= indice(window.numD, 'num', 'tabDirEnvios');
+			let filaSel1    = tabDirEnvios.getElementsByTagName('tr')[indFila1 + 1];
+			$('#tabDirEnvios').bootstrapTable('scrollTo', Math.abs(filaSel1.offsetTop) - 5);
+			$('.success2').removeClass('success2');
+			filaSel1.classList.add('success2');
+	    }
+		if (window.opcionDirEnvio === 2) {
+			$('#tabDirEnvios').bootstrapTable('updateByUniqueId', {
+				id:       	window.numD,
+				row:    	fila2,
+				replace: 	false
+			});
+			if (PorDefecto.value == -1) { revisarPredDirEnvio(); }
+		}
+	    $('#modalDirEnvio').modal('hide');
+	}
+
+
+	PorDefecto.addEventListener('click', (event) => {
+		if (PorDefecto.defaultChecked) {
+			event.preventDefault ();
+		} else {
+			if (PorDefecto.checked) { PorDefecto.value = -1; } else { PorDefecto.value = 0; }
+		}
+	});
+
+
+	ZonaAgenciaD.addEventListener('change', (event) => {
+		devDato("SELECT elt(" + ZonaAgenciaD.value + ", deszona_a, deszona_b, deszona_c, deszona_d) as datoDevuelto from agencias where COD='" + empresa_de_envio.value + "';", DescripciónZonaAgencia, false);
+	});		
+
+
+
+	function revisarPredDirEnvio() {
+	    var $table2 = $('#tabDirEnvios');
+	    if (PorDefecto.value == -1) {
+			var numFilas = Object.keys($table2.bootstrapTable('getData')).length;
+			if (numFilas != 0)  {
+			    for (var i = 0; i < numFilas; i++) {
+			      var a = $table2.bootstrapTable('getData')[i];
+			      	if (a.num != window.numD) {
+				        if (a.PorDefecto == -1) {
+				          	$table2.bootstrapTable('updateByUniqueId', {
+			                	id:  a.num,
+			                	row: {PorDefecto: 0},
+			                	replace: false
+				          	});
+				        }
+			      	}
+			    }
+			}
+	    }
+	}
+
+</script> 
+
+
+
+
+
+
+
+
+
+
+<script>
+	var $table 		= $('#tabClientes');
+	var indiceFila	= -1;
+	var refresco 	= -1;
+	var iPos 		= 0;
+
+	$(function() {
+
+	    $table.on('click-row.bs.table', function (e, row, $element) {
+	    	window.idTabClientes 	= row.ccn;
+	    	indiceFila				= $element.index();
+	    	iPos					= $table.bootstrapTable('getScrollPosition');
+
+        	let rows 				= Array.from(document.querySelectorAll('tr.success'));
+        	rows.forEach(row => {  row.classList.remove('success');  });    	
+	    	$element.addClass('success');
+
+	    	return false;
+
+	    })
+
+		$table.on('dbl-click-row.bs.table', function (e, row, $element) {	
+			// gestión ventanas
+			seleccionarRegistroYcerrar('nExtClientes', row.cod, row.nom, row.ccn);
+		})	    
+
+	    $table.on('sort.bs.table',   function () {
+	    	refresco 	= -1;
+	  		return false;
+	    })
+
+	    $table.on('search.bs.table', function () {
+	    	refresco 	= -1;
+	  		return false;
+	    }) 
+
+
+	    $table.on('page-change.bs.table', function () {
+	    	refresco 	= -1;
+	  		return false;
+	    }) 
+
+
+
+    	$table.on('post-body.bs.table', function (data) {
+			setTimeout(
+		    function () {
+
+		    	// refresco después de inicio, buscar u ordenar
+		    	if (refresco == -1) {
+					iPos 					= 0;
+					window.idTabClientes 	= '';
+					indiceFila				= seleccionarFila('tabClientes', 'idTabClientes', 'ccn', 'success');
+	    			refresco 				= 0;
+	    			return false;
+		    	}
+
+		    	// refresco después de añadir o eliminar
+		    	if (refresco == 1) {
+		    		indiceFila				= indice(window.idTabClientes, 'ccn', 'tabClientes');
+					iPos 					= Math.abs(tabClientes.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+		    	}
+
+		    	// refresco regular
+		    	$table.bootstrapTable('scrollTo', iPos);
+		    	refresco = 0;
+		    	return false;
+
+			}, 500);
+
+			return false;
+
+		})
+
+
+	    $table.on('refresh.bs.table', function (params) {
+	    })			    
+
+	})
+
+
+	window.icons = {
+		detailOpen: 'bi-caret-down-fill',
+		detailClose: 'bi-caret-up-fill'
+	}; 	
+
+	function rowStyle(row) {
+		let customClass = "";
+		if (row.ccn == window.idTabClientes) { customClass = 'success'; }
+		else {}
+		return { classes: customClass };
+	}
+
+	function detailFormatter(index, row) {
+		var html = [];
+		$.each(row, function (key, value) {
+			if (key == 'ccn' ||  !value || value == '') { }
+			else {
+				let a = '';
+				let b = '';
+				if (key == 'cod')  		{ a = 'Código'; 					b = value; }
+				if (key == 'nom')  		{ a = 'Nombre'; 					b = value; }
+				if (key == 'noc')  		{ a = 'Nombre comercial'; 			b = value; }
+				if (key == 'nif')  		{ a = 'NIF'; 						b = value; }
+				if (key == 'zod')  		{ a = 'Zona'; 						b = value; }
+				if (key == 'gcd')  		{ a = 'Grupo clientes'; 			b = value; }
+				if (key == 'tta')  		{ a = 'Tarifa'; 					b = aTipoTarifa[value - 1]; }
+				if (key == 'cpo')  		{ a = 'C. P.'; 						b = value; }
+				if (key == 'pob')  		{ a = 'Población'; 					b = value; }
+				if (key == 'pro')  		{ a = 'Provincia'; 					b = value; }
+				if (key == 'pai')  		{ a = 'País'; 						b = value; }
+				if (key == 'per')  		{ a = 'Persona de contacto'; 		b = value; }
+				if (key == 'te1')  		{
+					a = 'Telefóno 1';
+					b = value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul>';
+				}
+				if (key == 'te2')  		{ 
+					a = 'Teléfono 2';
+					b = value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul>';
+				}
+				if (key == 'cor')  		{
+				 	a = 'E-mail'; 
+					b = value + ' <a href="mailto:' + value + '" target="_blank"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></a>';
+				}
+				if (key == 'www')  		{
+					a = 'Web';
+					b = value + ' <a href="' + value + '" target="_blank"><i class="bi bi-globe2" style="font-size: 1rem; color: currentColor;"></i></a>';
+				}				
+				if (key == 'age')  		{ a = 'Agente comercial'; 			b = value; }
+				if (key == 'por')  		{ a = 'Portes'; 					b = aPortes[value - 1]; }
+				if (key == 'foe')  		{ a = 'Forma envío'; 				b = aFormaEnvio[value - 1]; }
+				if (key == 'agd')  		{ a = 'Agencia envío'; 				b = value; }
+				if (key == 'din')  		{ a = 'Divisa'; 					b = value; }
+				if (key == 'fpd')  		{ a = 'Forma pago'; 				b = value; }
+				if (key == 'fac')  		{ a = 'Facturación'; 				b = formatoPeriodicidad(value); }
+				if (key == 'sub')  		{ a = 'Subcuenta'; 					b = value; }
+				if (key == 'reg')  		{ a = 'Régimen IVA';				b = aRegIVAv[value]; }
+				if (key == 'rec')  		{ a = 'Rec Equiv';					b = formatoBool(value); }
+				if (key == 'alt')  		{ a = 'Alta'; 						b = formatoFecha(value); }
+				if (key == 'blo')  		{ a = 'Bloqueado'; 					b = formatoBool(value); }
+				if (!(!b || b == '')) {
+					html.push('<div><b>' + a + ':</b> ' + b + '</div><p></p>');		
+				}
+			}
+		})
+		return html.join('');
+	}
+
+	function refrescar(n) {
+	    refresco = n;
+	    $table.bootstrapTable('refresh');
+	    return false;
+  	}
+
+  	function preFormato(value, row) { return formatoBool(value, true); } 
+  	function fecFormato(value, row) { return formatoFecha(value); } 	
+  	function ttaFormato(value, row) { return aTipoTarifa[value - 1]; }
+  	function porFormato(value, row) { return aPortes[value - 1]; }
+  	function foeFormato(value, row) { return aFormaEnvio[value - 1]; }
+  	function facFormato(value, row) { return formatoPeriodicidad(value); }
+  	function regFormato(value, row) { return aRegIVAv[value]; }
+
+
+</script>
+
+
+  </body>
+</html>

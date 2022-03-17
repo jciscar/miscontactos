@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<title>Mis contactos</title>
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+		<script src="libgp01.js"></script>
+
+		<link rel="shortcut icon" href="logo.ico">
+
+</head>
+<body>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function(event) {
+    	var myModal = new bootstrap.Modal(document.getElementById('cambioContrasena'));
+		myModal.show();
+	});
+</script>	
+
+	<div class="container-fluid">
+
+		<!-- Comienzo modal acceso usuario -->
+		<div class="modal fade" id="cambioContrasena" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		  	<div class="modal-dialog">
+		      	<div class="modal-content">
+		            <form id="formContrasena" >
+		            	<!-- Modal Header -->
+			          	<div class="modal-header bg-dark bg-gradient">
+			              	<p class="modal-title h6 text-warning">Cambiar contraseña</p>
+			              	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="history.back();"></button>
+			          	</div>       
+			          	<!-- Modal body -->
+			          	<div class="modal-body bg-success bg-opacity-50 bg-gradient">
+
+					    	<div class="input-group mb-4">
+  								<div class="input-group-prepend">
+    								<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
+  								</div>
+								<input type="password" name="contrasenaant" id="contrasenaant" placeholder="Contraseña actual" maxlength="32" required class="form-control">
+  							</div> 
+
+					    	<div class="input-group mb-2">
+  								<div class="input-group-prepend">
+    								<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
+  								</div>
+								<input type="password" name="contrasena" id="contrasena" placeholder="Nueva contraseña" maxlength="32" required class="form-control">
+  							</div>  
+
+					    	<div class="input-group mb-1">
+  								<div class="input-group-prepend">
+    								<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
+  								</div>
+								<input type="password" name="contrasena1" id="contrasena1" placeholder="Repita contraseña" maxlength="32" required class="form-control">
+  							</div> 
+
+							<div id="msgAccesoUsuario"></div>
+
+  							<div class="row">
+  								<div class="col-auto">
+								    <ul><small>
+								    	<li>Ocho caracteres como mínimo</li>
+								      	<li>Un número al menos</li>
+ 									</small></ul>								        									
+	  							</div>
+  								<div class="col-auto">
+								    <ul><small>
+							      		<li>Una letra minúscula al menos</li>
+							      		<li>Una letra mayúscula al menos</li>
+ 									</small></ul>  									
+  								</div>
+  							</div>
+
+							<div class="row justify-content-start align-items-center gx-2 gy-2 mb-2">
+								<div class="col-auto">
+									<button type="submit" class="btn btn-success" id="Aceptar" value="Aceptar"><i class="bi bi-check-lg" style="font-size: 1.2rem; color: orange;" ></i>&nbsp; Aceptar</button>
+								</div>
+								<div class="col-auto">
+									<button type="reset"  class="btn btn-sm btn-warning text-dark" id="cancelar" value="Cancelar"><i class="bi bi-x-lg" style="font-size: 1rem; color: black;"></i>&nbsp;  Cancelar</button>
+								</div>
+							</div>
+
+						</div>
+					</form>	
+<script>
+	formContrasena.onsubmit = async (e) => {
+	    e.preventDefault();
+
+	    if (contrasena.value != contrasena1.value) {
+	    	modal1('Mis contactos', 'La contraseña no coincide', msgAccesoUsuario);
+	    	return false;
+	    } else if (contrasena.value.length < 8) {
+	    	modal1('Mis contactos', 'La longitud de la contraseña debe ser de ocho caracteres como mínimo', msgAccesoUsuario);
+	    	return false;
+	    } else if (noIncluidoEnContrasena(contrasena.value, 1)) {
+	    	modal1('Mis contactos', 'La contraseña debe contar con al menos un número', msgAccesoUsuario);
+	    	return false;
+	    } else if (noIncluidoEnContrasena(contrasena.value, 2)) {
+	    	modal1('Mis contactos', 'La contraseña debe contar con al menos una letra minúscula', msgAccesoUsuario);
+	    	return false;
+	    } else if (noIncluidoEnContrasena(contrasena.value, 3)) {
+	    	modal1('Mis contactos', 'La contraseña debe contar con al menos una letra mayúscula', msgAccesoUsuario);
+	    	return false;
+	    }
+	    
+		async function datosDevueltos1() {
+			const response1 = await fetch('php/cambiocontrasena.php', {
+	      		method: 'POST',
+	      		body: new FormData(formContrasena)
+	    	});
+			const data = await response1.json();
+			return data;
+		}
+		datosDevueltos1().then((data) => {
+	        if (data == 'OK') {
+        		msjContrasena.innerHTML = 'Contraseña cambiada';
+				let myModalNuevo2 = new bootstrap.Modal(dialogoContrasena);
+				myModalNuevo2.show();
+			} else if (data == 'KO') {					            
+				modal1('Mis contactos', 'La contraseña anterior no es correcta', msgAccesoUsuario);
+	        } else {
+	        	modal1('Mis contactos', data, msgAccesoUsuario);
+			}
+		}).catch(error => {
+			modal1('Mis contactos', error.message, msgAccesoUsuario);
+		});
+
+  	};
+
+</script>
+
+		      	</div>
+			</div>
+		</div>
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoContrasena" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">Mis contactos</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjContrasena"></p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+
+<script>
+	dialogoContrasena.addEventListener('hidden.bs.modal', function (e) {
+		history.back();
+	});
+</script>
+
+</div>
+
+
+
+
+
+	</div>	
+</body>
+</html>	

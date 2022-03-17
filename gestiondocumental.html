@@ -1,0 +1,671 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gestión documental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js">"</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+	<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+	<script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+	<script src="https://unpkg.com/bootstrap-table@1.19.1/dist/locale/bootstrap-table-es-ES.min.js"></script>
+
+  	<script src="libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="logo.ico">
+
+	<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after     { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    } 
+
+
+	@media all and (display-mode: standalone) {
+		#PantallaCompleta { display: none; }
+	}    
+
+    .success {
+        background: #92c5fc;
+        font-weight: bold;
+    }
+
+    .success1 {
+        background: #92c5fc;
+        font-weight: bold;
+    }
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; }
+
+	</style>
+
+  </head>
+  <body class="bg-light" onunload="descargar()">
+
+  <script>
+
+    // gestión ventanas. Es la función que se ejecutar en onunload de body
+    function descargar() { despuesDeCerrarVentana('nExtDocumentos', 'gestiondocumental'); }
+
+  	var $table = document.getElementById('tabDocumentos');
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+    	compProcedencia();
+		// gestión ventanas
+		despuesDeAbrirVentana('nExtDocumentos', 'gestiondocumental');
+
+		$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+		cambiarAltoTabla();
+
+		return false;
+
+    });
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabDocumentos');
+		return false;
+	});	
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+	function eliminarDocumento(){	
+		let myModal = new bootstrap.Modal(document.getElementById('formEliminarDocumento'));
+		myModal.show();
+        return false;
+	}
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-1 mb-1">
+
+			<button class="btn btn-success btn-sm" id="VerrDocumento" title="Ver documento" data-toggle="tooltip" onClick="regTabla('modalDocumento', 'opcionDocumento', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm" id="NuevoDocumento" title="Nuevo documento" data-toggle="tooltip" onClick="regTabla('modalDocumento', 'opcionDocumento', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EditarDocumento" title="Editar documento" data-toggle="tooltip" onClick="regTabla('modalDocumento', 'opcionDocumento', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EliminarDocumento" title="Eliminar documento" data-toggle="tooltip" onClick="eliminarDocumento()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			</div>
+
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm d-none d-md-block" id="imprimirDocumentos" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Documentos', tabDocumentos)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="exportarDocumentos" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar tabla">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+
+
+
+
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-1 mb-1">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Gestión documental</a>
+		</div>
+
+		<div class="col-auto align-self-center d-sm-block d-md-none mt-1 mb-1">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalDocumento', 'opcionDocumento', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo documento</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalDocumento', 'opcionDocumento', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar documento</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarDocumento()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar documento</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalDocumento', 'opcionDocumento', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver documento</a></li>				
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabDocumentos')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Documentos', tabDocumentos)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenu"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenu">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','Documentos','Tabla de Documentos',100, 'tabDocumentos')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+		<div class="col-auto align-self-center mt-1 mb-1">
+		  	<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabDocumentos','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		</div>	
+
+		<div class="col-auto align-self-center d-none d-md-block  mt-1 mb-1">
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabDocumentos')">
+					<label class="form-check-label" for="vistaTarjeta"></label>
+				</div>
+			</div>
+			<button class="btn btn-outline-success btn-sm" id="PantallaCompleta" title="Modo pantalla completa" data-toggle="tooltip" onClick="toggleFullScreen()"><i class="bi bi-fullscreen"></i></button>
+		</div>
+
+		<div class="col-auto align-self-center mt-1 mb-1">
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick="cerrarVentana('nExtDocumentos')" title="Cerrar" data-toggle="tooltip" style="text-align:right;"></button>				
+		</div>
+	</div>
+</div>
+
+<script>
+
+    opcionesTablaSubmenu.addEventListener('click',  (e) => { 
+        e.stopPropagation();
+    });
+
+    opcionesExportarSubmenu.addEventListener('click',   (e) => { 
+        e.stopPropagation();
+    });
+
+</script>
+
+<div class="container-fluid">
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabDocumentos" data-url="./php/datosTabla.php?vista=documentos" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="ID" data-undefined-text=""
+
+    data-unique-id="ID"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabDocumentos"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="fec"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+    data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"     
+
+    data-export-data-type="all"
+
+    data-row-style="rowStyle"
+
+    data-cache="false"    
+
+    >
+
+    
+    <thead class="bg-dark text-light">
+        <tr>
+        	<th data-field="ID" data-sortable="false" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false"></th>
+			<th data-field="fec" data-sortable="true" data-click-to-select="true" data-formatter="fecFormato">Fecha</th>
+			<th data-field="nom" data-sortable="true" data-click-to-select="true" data-formatter="enlaceFormato">Nombre fichero</th>
+			<th data-field="com" data-sortable="true" data-click-to-select="true">Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+
+<!-- Comienzo modal form documento -->
+<div class="modal fade" id="modalDocumento" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-lg">
+      	<div class="modal-content"> 
+
+		        <!-- Modal Header -->
+		      	<div class="modal-header bg-dark bg-gradient sticky-top">
+		        	<div class="col-6">
+		            <a class="navbar-brand text-warning" id="exampleModalLabel">Documento</a>
+		          </div>
+							<div class="col-auto" style="text-align:right;">
+								<form id="formDocumento">
+								<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+								<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+								<input type="hidden" name="ID" id="ID" value="0">
+							</div>
+							<div class="col-1" style="text-align:right;">
+				        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+				        </button>
+				      </div>
+						</div>
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+		        <div class="container-fluid">
+
+					<div class="row align-content-center justify-content-start gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<label for="fec" class="col-form-label">Fecha</label>
+						</div>
+						<div class="col-auto">
+							<input type="date" name="fec" id="fec" value="" required class="form-control" title="Fecha del documento" data-toggle="tooltip">
+						</div>					
+					</div>
+
+					<div class="row gx-3 gy-3 mb-3">
+						<div class="input-group">
+							<input type="file" id="fic" name="fic" style="display: none;">
+							<div class="input-group-prepend">
+								<button type="button" class="btn btn-primary" id="examinar" onclick="document.getElementById('fic').click();" title="Examinar..." data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+							</div>
+							<input type="text" name="nom" id="nom" placeholder="Nombre del fichero" maxlength=255 size=255 required class="form-control" title="Nombre del fichero" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row gx-3 gy-3 mb-1">
+						<div class="col-auto w-100">
+							<textarea name="com" id="com" placeholder="Descripción" maxlength="255" size=255 rows="3" class="form-control" title="Descripción del documento" data-toggle="tooltip"></textarea>
+						</div>
+					</div>
+										
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	fic.addEventListener('change', function(e) {
+	  	let file 	= e.target.files[0];
+	  	nom.value 	= file.name;
+	  	//alert(file.size);
+	})
+
+	modalDocumento.addEventListener('show.bs.modal', function (e) {	
+		if (window.opcionDocumento === 1) {
+			let date 			= new Date();
+			let currentDate  	= date.toISOString().slice(0,10);
+			fec.defaultValue 	= currentDate;
+			nom.defaultValue 	= '';		
+			com.defaultValue 	= '';
+			
+			fec.readOnly 		= false;
+			nom.readOnly		= false;
+			com.readOnly 		= false;
+
+			aceptar.hidden 		= false;
+      		cancelar.hidden 	= false;
+
+      		examinar.style.display = '';
+		}
+
+		if (window.opcionDocumento === 2 || window.opcionDocumento === 4) {
+			let queries2 = "SELECT DATE_FORMAT(`fecha`,'%Y-%m-%d') AS `fec`, `nombreArchivo` AS `nom`, `comentario` AS `com` FROM `gestiondocumental` where `ID` = " + window.idTabDocumentos + ";";
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 0);
+			formData2.append('fil', btoa(window.fil));
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+				ID.defaultValue  = window.idTabDocumentos;
+				fec.defaultValue = data[0].fec;
+				nom.defaultValue = data[0].nom;
+				com.defaultValue = data[0].com || '';
+			})
+		}
+
+		if (window.opcionDocumento === 2) {
+			fec.readOnly 		= false;
+			nom.readOnly		= false;
+			com.readOnly 		= false;
+			aceptar.hidden 		= false;
+      		cancelar.hidden 	= false;
+      		examinar.style.display = '';
+		}		
+
+		if (window.opcionDocumento === 4) {
+			fec.readOnly 		= true;
+			nom.readOnly		= true;
+			com.readOnly 		= true;
+			aceptar.hidden 		= true;
+      		cancelar.hidden 	= true;
+      		examinar.style.display = 'none';
+		}
+
+		document.getElementById('formDocumento').reset();
+
+	})
+
+
+	formDocumento.onsubmit = async (e) => {
+		e.preventDefault();
+
+	    let fila2 = {
+	     	ID: 	ID.value,
+	     	fec: 	fec.value,
+	     	com: 	com.value,
+	        nom: 	nom.value
+	    };
+		async function datosDevueltos1() {
+			let formData1 = new FormData(formDocumento);
+			formData1.append('esBDempresas', 0);
+			formData1.append('opcionListado', window.opcionDocumento);
+			formData1.append('numFicheros', fic.files.length);
+            const response1 = await fetch('php/documento.php', {
+                method: 'POST',
+                body:   formData1
+            });
+            const data1 = await response1.json();
+            return data1;
+		}
+        datosDevueltos1().then((data1) => {
+        	if (data1.toString().substring(0, 4) == 'codN') {
+	    		$('#modalDocumento').modal('hide');
+	    		fila2.ID = data1.toString().substring(4);
+				window.idTabDocumentos = fila2.ID;
+ 				$('#tabDocumentos').bootstrapTable('append', fila2);
+ 				refrescar (1);
+			} else if (data1 == '0') {
+				$('#tabDocumentos').bootstrapTable('updateByUniqueId', {
+	  				id: 		window.idTabDocumentos,
+	  				row: 		fila2,
+		        	replace: 	false
+				});
+				$('#modalDocumento').modal('hide');
+            } else {
+                msjDocumento.innerHTML=data1;
+                let myModalNuevo3 = new bootstrap.Modal(dialogoDocumento);
+                myModalNuevo3.show();
+            }
+        }).catch(error => {
+            alert(error.message);
+        })			
+	    
+	}
+
+</script>
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoDocumento" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">Mis contactos</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjDocumento">No se puede eliminar el documento por defecto</p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+</div>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarDocumento" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+      	  	
+          	<!-- Modal Header -->
+          	<div class="modal-header bg-light">
+              	<h5 class="modal-title">Documento</h5>
+          		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          	</div>       
+          	<!-- Modal body -->
+          	<div class="modal-body">
+	        	<div class="container-fluid">
+	        	
+					<div class="row mb-3">
+						<div class="row align-content-center justify-content-start gx-3 gy-3">
+							<div class="col-auto">
+								<label for="fecE" class="col-form-label">Fecha</label>
+							</div>
+							<div class="col-auto">
+								<input type="text" id="fecE" disabled class="form-control" title="Fecha del documento" data-toggle="tooltip">
+							</div>					
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-auto w-100">
+							<input type="text" id="nomE" disabled class="form-control" title="Nombre del fichero" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row mb-1">
+						<div class="col-auto w-100">
+							<input type="text" id="comE" disabled class="form-control" title="Descripción del documento" data-toggle="tooltip">
+						</div>
+					</div>					
+
+				</div>
+		  	</div>
+          
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar Documento? </p>  
+		        </div>
+		        <button type="button" class="btn btn-primary"   id="SiEliminarDocumento" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarDocumento" data-bs-dismiss="modal">No</button>
+	        </div>
+
+    	</div>
+  	</div>  
+</div>
+<script>
+
+	formEliminarDocumento.addEventListener('show.bs.modal', function (e) {	
+		let i = indice(window.idTabDocumentos, 'ID', 'tabDocumentos');
+		fecE.value = formatoFecha($('#tabDocumentos').bootstrapTable('getData')[i]['fec']);
+		nomE.value = $('#tabDocumentos').bootstrapTable('getData')[i]['nom'];
+		comE.value = $('#tabDocumentos').bootstrapTable('getData')[i]['com'];
+	});
+
+
+    $('#SiEliminarDocumento').on('click', function(event) {
+		let formData3 = new FormData();
+		formData3.append('esBDempresas', 0);
+		formData3.append("ID", window.idTabDocumentos);
+		formData3.append("opcionListado", 3);
+		async function eliminaDocumento() {
+			const response3 = await fetch('php/documento.php', {
+	      		method: 'POST',
+	      		body: 	formData3,
+	    	});
+			const data3 = await response3.json();
+			return data3;
+		}
+		eliminaDocumento().then((data3) => {
+			let eliDocumento = eliminarReg1('tabDocumentos', 'idTabDocumentos', 'ID', '');	
+		}).catch(error => {
+			alert(error.message);
+		});
+    });
+
+
+</script>
+
+
+<script>
+	var $table 		=  $('#tabDocumentos');
+	var numTab 		=  0;
+	var indiceFila	= -1;
+	var refresco 	= -1;
+	var iPos 		=  0;
+
+  	$(function() {
+	    $table.on('click-row.bs.table', function (e, row, $element) {
+	    	window.idTabDocumentos 			= row.ID;
+	    	indiceFila						= $element.index();
+	    	iPos							= $table.bootstrapTable('getScrollPosition');
+			$('.success').removeClass('success');
+	    	$element.addClass('success');
+	    	return false;				
+	    })
+
+	    //$table.on('all.bs.table', function (e, name, args) {
+	      //alert(name, args)
+	    //})
+
+	    $table.on('dbl-click-row.bs.table', function (e, row, $element) {
+	        // gestión ventanas
+	        //seleccionarRegistroYcerrar('nExtDocumentos', row.ID, row.nom, '');
+	    }) 
+
+	    $table.on('sort.bs.table', function (name, order) { 
+	    	refresco 	= -1;
+	    	return false;
+	    })
+
+	    $table.on('search.bs.table', function (text) {
+	    	refresco 	= -1;
+	    	return false;
+	    }) 
+
+	    $table.on('post-body.bs.table', function () {
+				setTimeout(
+			    function () {
+
+			    	// refresco después de inicio, buscar u ordenar
+			    	if (refresco == -1) {
+							iPos 						= 0;
+							window.idTabDocumentos 		= '';
+							indiceFila					= seleccionarFila('tabDocumentos', 'idTabDocumentos', 'ID', 'success');
+		    			refresco 						= 0;
+		    			return false;
+			    	}
+
+			    	// refresco después de añadir o eliminar
+			    	if (refresco == 1) {
+			    		indiceFila						= indice(window.idTabDocumentos, 'ID', 'tabDocumentos');
+						iPos 							= Math.abs(tabDocumentos.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+			    	}
+
+			    	// refresco regular
+			    	$table.bootstrapTable('scrollTo', iPos);
+			    	refresco = 0;
+			    	return false;
+
+				}, 500);
+	    })
+
+	})
+
+	window.icons = {
+		detailOpen: 'bi-caret-down-fill',
+		detailClose: 'bi-caret-up-fill'
+	}; 	
+
+	function rowStyle(row) {
+		let customClass = "";
+		if (row.ID == window.idTabDocumentos) { customClass = 'success'; }
+		else {}
+		return { classes: customClass };
+	}	
+
+	function refrescar(n) {
+	    refresco = n;
+	    $table.bootstrapTable('refresh');
+	    return false;
+  	}
+
+  	function fecFormato(value, row) { return formatoFecha(value); }
+
+  	function enlaceFormato(value, row) {
+  		 return '<a href="php/descargarfichero.php?id=' + row.ID + '" class="text-decoration-none" target="_blank">' + value + '</a>';
+  	}
+
+</script>
+
+
+  </body>
+</html>

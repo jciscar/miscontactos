@@ -1,0 +1,824 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Usuarios</title>
+
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="lib/icons/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.min.css">
+    <script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+
+    <script src="lib/bootstrap-table/dist/locale/bootstrap-table-es-ES.min.js"></script>
+    
+    <script src="lib/bootstrap-table/dist/tableExport.min.js"></script>
+    <script src="lib/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+
+  	<script src="lib/gp/libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="lib/ico/logo.ico">	
+
+	<style>
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after     { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    }   
+
+    .success {
+            background: #92c5fc;
+            font-weight: bold;
+    }   
+
+    .success1 {
+            background: #92c5fc;
+            font-weight: bold;
+    }       
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; }
+
+
+
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+	  visibility: hidden; /* Hidden by default. Visible on click */
+	  min-width: 250px; /* Set a default minimum width */
+	  margin-left: -125px; /* Divide value of min-width by 2 */
+	  background-color: #333; /* Black background color */
+	  color: #fff; /* White text color */
+	  text-align: center; /* Centered text */
+	  border-radius: 2px; /* Rounded borders */
+	  padding: 16px; /* Padding */
+	  position: fixed; /* Sit on top of the screen */
+	  z-index: 1; /* Add a z-index if needed */
+	  left: 50%; /* Center the snackbar */
+	  bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+	  visibility: visible; /* Show the snackbar */
+	  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+	  However, delay the fade out process for 2.5 seconds */
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}    
+
+	</style>
+
+  </head>
+  <body class="bg-light" onunload="descargar()">
+
+  <script>
+
+  	// gestión ventanas. Es la función que se ejecutar en onunload de body
+  	function descargar() { despuesDeCerrarVentana('nExtUsuarios', 'usuarios'); }
+
+  	var $table = document.getElementById('tabUsuarios');
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+    	compProcedencia();
+    	// gestión ventanas
+    	despuesDeAbrirVentana('nExtUsuarios', 'usuarios');
+
+    	$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+    	cambiarAltoTabla();
+    	return false;
+
+    });
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabUsuarios');
+		if (window.nExtUsuarios != 0) { msjDblClic(); }		
+		return false;
+	});	
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+	function eliminarUsuario(){	
+		let formDataE = new FormData();
+		formDataE.append("nform", 'usuarios');
+		formDataE.append("codnum", window.idTabUsuarios);
+		formDataE.append("opcionlistado", 3);
+		async function comprobarAntesDeEliminar() {
+			const comprobarResponse = await fetch('php/comprobar_antes_de_editar_o_eliminar.php', {
+	      		method: 'POST',
+	      		body: 	formDataE
+	    	});
+			const dataE = await comprobarResponse.json();
+			return dataE;
+		}
+		comprobarAntesDeEliminar().then((dataE) => {
+			if (dataE == 'OK') {
+				let myModal = new bootstrap.Modal(document.getElementById('formEliminarUsuario'));
+				myModal.show();
+				nomE.defaultValue =  window.idTabUsuarios;
+			} else {
+				modal1('Mis contactos', dataE, myTextDataList);				
+			};				
+		}).catch(error => {
+			modal1('Mis contactos', error.message, myTextDataList);
+		});
+        return false;
+	}
+
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-1 mb-1">
+	  		<button class="btn btn-success btn-sm" id="VerUsuario" title="Ver usuario" data-toggle="tooltip" onClick="regTabla('modalUsuario', 'opcionUsuario', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm ml-2" id="NuevoUsuario" title="Nuevo usuario" data-toggle="tooltip" onClick="regTabla('modalUsuario', 'opcionUsuario', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EditarUsuario" title="Editar usuario" data-toggle="tooltip" onClick="regTabla('modalUsuario', 'opcionUsuario', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EliminarUsuario" title="Eliminar usuario" data-toggle="tooltip" onClick="eliminarUsuario()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			</div>
+
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm d-none d-md-block" id="columnasUsuarios" title="Mostrar columnas" data-toggle="tooltip" onClick="mostrarColumnas('modalColumnasTablasUsuarios', 0)"><i class="bi-layout-three-columns" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm d-none d-md-block" id="imprimirUsuarios" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Usuarios', tabUsuarios)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="exportarUsuarios" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar tabla">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+
+
+
+
+		</div>
+
+		
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-1 mb-1">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Usuarios</a>
+		</div>
+
+		<div class="col-auto d-sm-block d-md-none mt-1 mb-1">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="true">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalUsuario', 'opcionUsuario', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo usuario</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalUsuario', 'opcionUsuario', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar usuario</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarUsuario()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar usuario</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalUsuario', 'opcionUsuario', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver usuario</a></li>		
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabUsuarios')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+						<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasUsuarios', 0)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>		  			
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Usuarios', tabUsuarios)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenu"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenu">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','Usuarios','Tabla de Usuarios',100, 'tabUsuarios')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+		<div class="col-auto align-self-center mt-1 mb-1">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabUsuarios','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+
+		<div class="col-auto align-self-center mt-1 mb-1">
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabUsuarios')">
+					<label class="form-check-label" for="vistaTarjeta"></label>
+				</div>		
+			</div>
+		</div>
+
+
+		<div class="col-auto align-self-center mt-1 mb-1">
+		  	<div class="btn-group" role="group">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Cerrar" onclick="cerrarVentana('nExtUsuarios')" data-toggle="tooltip"></button>		
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    opcionesTablaSubmenu.addEventListener('click', (e) => { 
+        e.stopPropagation();
+    });
+    opcionesExportarSubmenu.addEventListener('click', (e) => { 
+        e.stopPropagation();
+    });
+</script>
+
+<div id="snackbar">Doble clic para seleccionar usuario</div>
+
+<div class="container-fluid">
+	<table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabUsuarios" data-url="./php/datosTabla.php?vista=usuarios" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="nom" data-undefined-text=""
+
+    data-unique-id="nom"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabUsuarios"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="nom"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+    data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"  
+
+    data-export-data-type="all"
+
+    data-detail-view="true"
+    data-detail-formatter="detailFormatter"
+    data-row-style="rowStyle"
+
+    data-cache="false"    
+   
+    >
+
+    
+    <thead class="bg-dark text-light">
+	    <tr>
+	     	<th data-field="nom" data-sortable="true" data-click-to-select="true" data-switchable="false">Nombre</th>
+	     	<th data-field="adm" data-sortable="true" data-click-to-select="true" data-formatter="preFormato" data-align="center">Administrador</th>
+			<th data-field="cgr" data-sortable="true" data-click-to-select="true">Cód. grupo</th>
+			<th data-field="ngr" data-sortable="true" data-click-to-select="true">Nombre grupo</th>
+		</tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+  </table>
+
+  <div id="myTextDataList"></div>
+
+</div>
+
+</div>
+
+
+<!-- Comienzo modal form usuario -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-xl modal-fullscreen-md-down">
+      	<div class="modal-content">
+
+	        <!-- Modal Header -->
+	      	<div class="modal-header bg-dark bg-gradient sticky-top">
+	        	<div class="col-6">
+	            <a class="navbar-brand text-warning" id="exampleModalLabel">Usuario</a>
+	          </div>
+						<div class="col-auto" style="text-align:right;">
+							<form id="formUsuario">
+							<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+							<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+						</div>
+						<div class="col-1" style="text-align:right;">
+			        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+			          		</button>
+			      </div>
+					</div>
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+		        <div class="container-fluid">
+					<div class="row align-items-center gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<input type="text" name="nom" id="nom" value="" placeholder="Nombre" maxlength=12 size=12 required class="form-control" title="Nombre de usuario. Máximo 12 caracteres" data-toggle="tooltip">
+						</div>
+						<div class="col-auto">
+							<div class="form-check form-switch">
+							  	<label class="form-check-label">
+							    <input type="checkbox" name="adm" id="adm" class="form-check-input" value=0 title="Activar si de trata de un usuario administrador" data-toggle="tooltip">Administrador</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="row align-items-end gx-2 gy-1 mb-3">
+						<div class="col-auto">
+							<label for="cgr">Código grupo</label>
+							<div class="input-group">
+								<input type="text" name="cgr" id="cgr" maxlength="5" size=5 readonly class="form-control" title="Código del grupo de usuarios" data-toggle="tooltip">
+								<div class="input-group-append">
+									<button type="button" class="btn btn-outline-secondary" id="abrirGruposUsuarios" onclick="nuevaVentana('gruposusuarios', 'formUsuario', 'cgr', 'ngr')"  title="Abrir el fichero de grupos de usuarios" data-toggle="tooltip"><i class="bi bi-search" style="font-size: 1rem; color: currentColor;"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="col-auto">
+							<input type="text" id="ngr" size=30 readonly class="form-control" title="Nombre del grupo de usuarios" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row align-items-end gx-2 gy-1 mt-1 mb-2">
+						<div class="col-auto">
+	                    	<button type="button" class="btn btn-secondary mr-3 text-white" id="restablecer" title="Restablecer contraseña inicial" data-toggle="tooltip" style="display: none;"><i class="bi bi-unlock-fill" style="font-size: 1rem; color: white;" ></i> Restablecer contraseña</button>
+	                    </div>
+	                </div>
+
+	                <div id="myTextData"></div>
+
+				</div>
+
+				</form>	
+			</div>
+	
+		</div>
+	</div>
+</div>
+
+<script>
+	function ocultarBotones(e) {
+		abrirGruposUsuarios.style.display = e;
+	}
+
+	restablecer.addEventListener ('click', 	(e) => { 
+		async function datosDevueltos1() {
+			let formData1 = new FormData();
+			formData1.append('opcionListado', 6);
+			formData1.append('nom', nom.value);
+		    const response1 = await fetch('php/usuario.php', {
+		        method: 'POST',
+		        body:   formData1
+		    });
+		    const data1 = await response1.json();
+		    return data1;
+		}
+	    datosDevueltos1().then((data1) => {
+	    	if (data1 == '0') { 
+	    		 modal1("Mis contactos", "El usuario " + window.idTabUsuarios + " iniciará sesión con la contraseña '123abcABC'", myTextData);
+	    	} else {
+	    		 modal1('Mis contactos', data1, myTextData);
+	    	}
+		}).catch(error => {
+			alert(error.message);
+	    })
+	});
+
+	adm.addEventListener ('click', 	(e) => { 
+        if (adm.defaultChecked && adm.checked == false) {
+            let ningunPred = true;
+            var $table2 = $('#tabUsuarios');
+            let numFilas = Object.keys($table2.bootstrapTable('getData')).length;
+            if (numFilas != 0)  {
+                for (var i = 0; i < numFilas; i++) {
+                    var a = $table2.bootstrapTable('getData')[i];
+                    if (a.nom != window.idTabUsuarios) {
+                        if (a.adm == -1) { ningunPred = false; }
+                    }
+                }
+            }
+            if (ningunPred) {
+                e.preventDefault();
+                adm.checked = true; 
+                modal1('Mis contactos', 'Debe haber al menos un usuario administrador', myTextData);
+            }
+        }
+		if (adm.checked) { adm.value = -1; } else { adm.value = 0; }
+	});	
+
+    modalUsuario.addEventListener('hidden.bs.modal', function (e) {
+    	if (window.tipoMsje==1) {
+    		modal1('Mis contactos', "El usuario " + window.idTabUsuarios + " iniciará sesión con la contraseña '123abcABC'", myTextDataList); 	
+    	}
+        window.tipoMsje=0;
+    });  
+
+
+	modalUsuario.addEventListener('show.bs.modal', function (e) {	
+		if (window.opcionUsuario === 1) {
+
+			nom.defaultValue 		= '';
+			cgr.defaultValue 		= localStorage.getItem('codGrupoUsPri');
+			ngr.defaultValue 		= localStorage.getItem('nomGrupoUsPri');
+			adm.defaultValue 		= 0;
+			adm.defaultChecked		= false;
+
+			nom.readOnly 			= false;
+			cgr.readOnly 			= false;
+			ngr.readOnly 			= false;
+			adm.disabled 			= false;	
+
+			restablecer.style.display = 'none';
+
+			aceptar.hidden 			= false;
+      		cancelar.hidden 		= false;
+      		ocultarBotones('block');
+		}
+
+		if (window.opcionUsuario === 2 || window.opcionUsuario === 4) {
+
+			let queries2 = "SELECT a.`Código grupo` AS `cgr`, b.`Nombre` AS `ngr`, a.`Administrador` AS `adm` FROM `usuarios` a inner join `gruposusuarios` b on a.`Código grupo` = b.`Código` where a.`Nombre` = '" + window.idTabUsuarios + "';";
+
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 1);
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+				nom.defaultValue 		= window.idTabUsuarios;
+				cgr.defaultValue 		= data[0].cgr;
+				ngr.defaultValue 		= data[0].ngr;
+				adm.defaultValue 		= data[0].adm;
+				if (data[0].adm == 0) { adm.defaultChecked = false; } else { adm.defaultChecked = true; }
+
+
+				if (window.opcionUsuario === 2) {
+					nom.readOnly 		= true;
+					cgr.readOnly 		= false;
+					ngr.readOnly 		= false;					
+					adm.disabled 		= false;
+
+					restablecer.style.display = '';
+
+					aceptar.hidden 		= false;
+      				cancelar.hidden 	= false;
+      				ocultarBotones('block');
+				}		
+
+				if (window.opcionUsuario === 4) {
+					nom.readOnly 		= true;
+					cgr.readOnly 		= true;
+					ngr.readOnly 		= true;					
+					adm.disabled 		= true;
+
+					restablecer.style.display = '';
+
+					aceptar.hidden 		= true;
+					cancelar.hidden 	= true;
+					ocultarBotones('none');
+				}
+
+			})
+		}
+
+		document.getElementById('formUsuario').reset();
+	})
+
+	formUsuario.onsubmit = async (e) => {
+		e.preventDefault();
+
+		if (window.opcionUsuario == 1) {
+			let maxUs 	= localStorage.getItem('numUsMax');
+			let nFilas 	= Object.keys($('#tabUsuarios').bootstrapTable('getData')).length;
+			if (nFilas >= maxUs) {
+				modal1('Mis contactos', 'Le recomendamos adquirir la licencia PREMIUM para poder operar con más usuarios. Más información <a href="./wp" target="_blank" target="_blank" class="fw-bold text-decoration-none">aquí</a>', myTextData);
+				return false;
+			}
+		}
+
+		var fila2 = {
+			nom: 			nom.value,
+			cgr: 			cgr.value,
+			ngr: 			ngr.value,
+			adm: 			adm.value
+    	};
+
+		async function datosDevueltos1() {
+			let formData1 = new FormData(formUsuario);
+			formData1.append('opcionListado', window.opcionUsuario);
+			formData1.append('adm', adm.value);
+		    const response1 = await fetch('php/usuario.php', {
+		        method: 'POST',
+		        body:   formData1
+		    });
+		    const data1 = await response1.json();
+		    return data1;
+		}
+
+	    datosDevueltos1().then((data1) => {
+	    	if (data1 == '2') { // añadir
+				$('#tabUsuarios').bootstrapTable('append', fila2);
+				window.idTabUsuarios = fila2.nom;
+				window.tipoMsje = 1;
+				seleccionarFila('tabUsuarios', 'idTabUsuarios', 'nom', 'success');
+				$('#modalUsuario').modal('hide');
+			} else if (data1 == '0') { //modificar
+				$('#tabUsuarios').bootstrapTable('updateByUniqueId', {
+	  				id: window.idTabUsuarios,
+	  				row: fila2,
+		        	replace: false
+				});
+				$('#modalUsuario').modal('hide');
+			} else if (data1 == '1') { //nombre de usuario ya existente
+				nom.focus();
+				modal1('Mis contactos', 'Nombre de usuario ya existente', myTextData);                         
+			} else {
+				modal1('Mis contactos', data1, myTextData);
+			}
+	    }).catch(error => {
+			alert(error.message);
+	    })
+	}
+
+	
+
+</script>
+
+<!-- Comienzo modal columnas visibles -->
+<div class="modal fade modal-dialog-scrollable" id="modalColumnasTablasUsuarios" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title">Columnas a mostrar</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+            	<form>
+            		<div class="form-group" id="listFields">
+                	</div>
+            	</form>
+            </div>
+        </div>
+    </div>
+
+<script>
+		modalColumnasTablasUsuarios.addEventListener('show.bs.modal', function (e) {
+				crearListadoNombresColumnas('modalColumnasTablasUsuarios');
+		})
+</script>
+
+</div>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarUsuario" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+      	  	
+          	<!-- Modal Header -->
+          	<div class="modal-header bg-light">
+              	<h5 class="modal-title">Usuario</h5>
+          		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          	</div>       
+          	<!-- Modal body -->
+          	<div class="modal-body">
+	        	<div class="container-fluid">
+	        		<form id="formDel">
+						<div class="row gx-3 gy-3">
+							<div class="col-auto">
+								<input type="text" name="nomE" id="nomE" size=12 readonly class="form-control" data-toggle="tooltip" title="Nombre del usuario">
+							</div>
+						</div>
+					</form>														
+				</div>
+		  	</div>
+          
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar usuario? </p>
+		        </div>
+		        <button type="button" class="btn btn-primary"   id="SiEliminarUsuario" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarUsuario" data-bs-dismiss="modal">No</button>
+	        </div>
+
+    	</div>
+  	</div>  
+</div>
+<script>
+	  $('#SiEliminarUsuario').on('click', function(event) {
+				let formData3 = new FormData();
+				formData3.append('esBDempresas', 1);
+				formData3.append("nom", window.idTabUsuarios);
+				formData3.append("opcionListado", 3);
+				async function eliminaUsuario() {
+					const response3 = await fetch('php/usuario.php', {
+			      		method: 'POST',
+			      		body: 	formData3,
+			    	});
+					const data3 = await response3.json();
+					return data3;
+				}
+				eliminaUsuario().then((data3) => {
+						let eliUsuario = eliminarReg('tabUsuarios', 'idTabUsuarios', 'nom', '');	
+				}).catch(error => {
+						alert(error.message);
+				});
+	  });
+</script>
+
+
+<script>
+
+	var $table 		=  $('#tabUsuarios');
+	var numTab 		=  0;
+	var indiceFila	= -1;
+	var refresco 	= -1;
+	var iPos 		=  0;
+
+  	$(function() {
+	    $table.on('click-row.bs.table', function (e, row, $element) {
+	    	window.idTabUsuarios 	= row.nom;
+	    	indiceFila				= $element.index();
+	    	iPos					= $table.bootstrapTable('getScrollPosition');
+			$('.success').removeClass('success');
+	    	$element.addClass('success');
+	    	return false;
+	    })
+
+		$table.on('dbl-click-row.bs.table', function (e, row, $element) {	
+			// gestión ventanas
+			seleccionarRegistroYcerrar('nExtUsuarios', row.nom, '', '');
+		})	 
+
+	    $table.on('sort.bs.table',   function () {
+	    	refresco 	= -1;
+	    	return false;
+	    })
+	    $table.on('search.bs.table', function () {
+	    	refresco 	= -1;
+	    	return false;
+	    }) 
+
+	    $table.on('post-body.bs.table', function () {
+			setTimeout(
+		    function () {
+
+		    	// refresco después de inicio, buscar u ordenar
+		    	if (refresco == -1) {
+					iPos 					= 0;
+					window.idTabUsuarios 	= '';
+					indiceFila				= seleccionarFila('tabUsuarios', 'idTabUsuarios', 'nom', 'success');
+	    			refresco 				= 0;
+	    			return false;
+		    	}
+
+		    	// refresco después de añadir o eliminar
+		    	if (refresco == 1) {
+		    		indiceFila				= indice(window.idTabUsuarios, 'nom', 'tabUsuarios');
+					iPos 					= Math.abs(tabUsuarios.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+		    	}
+
+		    	// refresco regular
+		    	$table.bootstrapTable('scrollTo', iPos);
+		    	refresco = 0;
+		    	return false;
+
+			}, 500);
+	     })
+
+	})
+
+	window.icons = {
+		detailOpen: 'bi-caret-down-fill',
+		detailClose: 'bi-caret-up-fill'
+	}; 	
+
+	function rowStyle(row) {
+		let customClass = "";
+		if (row.nom == window.idTabUsuarios) { customClass = 'success'; }
+		else {}
+		return { classes: customClass };
+	}
+
+
+	function detailFormatter(index, row) {
+		let html = [];
+		$.each(row, function (key, value) {
+			if  (!(!value || value == '')) {
+				let a = '';
+				let b = '';
+				if (key == 'nom')  	{ a = 'Nombre'; 		b = value; }
+				if (key == 'adm')  	{ a = 'Administrador'; 	b = formatoBool(value, true); }
+				if (key == 'cgr')  	{ a = 'Cód. grupo'; 	b = value; }
+				if (key == 'ngr')  	{ a = 'Nombre grupo'; 	b = value; }
+				if (!(!b || b == '')) {
+					html.push('<p><b>' + a + ':</b> ' + b + '</p>');
+				}
+			}
+		})
+		return html.join('');
+	}
+
+	function refrescar(n) {
+		refresco = n;
+		$table.bootstrapTable('refresh');
+		return false;
+	}
+
+	function preFormato(value, row) { return formatoBool(value, true); } 		
+
+</script>
+
+
+  </body>
+</html>

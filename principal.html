@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mis contactos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <script src="libgp01.js"></script>
+
+    <link rel="shortcut icon" href="logo.ico">
+
+    <style>
+        .dropdown-menu {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        //alert(localStorage.getItem("eixida"));
+        compProcedencia();
+        var myModal = new bootstrap.Modal(document.getElementById('modalMenu'));
+        myModal.show();        
+        inicioVentanasDesdePrincipal();
+    });
+
+    //window.addEventListener('beforeunload',(event) =>{
+        ////no funciona alert con beforeunload
+        ////event.preventDefault();
+        //let y = localStorage.getItem("eixida") || 0;
+        //localStorage.setItem("eixida", y + 1);
+    //});    
+</script>       
+
+    <div class="container-fluid">
+
+        <div class="modal fade" id="modalMenu" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header bg-dark bg-gradient">
+                        <h5 class="modal-title text-warning">Menú <strong>Mis Contactos</strong></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="cerrarVentanaPrincipal()"></button>
+                    </div>
+
+                    <div class="modal-body bg-primary bg-opacity-25">
+                        <div class="row gx-2 gy-2 mb-2">
+                            <div class="col-6">       
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('clientes')"><i class="bi bi-person-heart" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Clientes</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('proveedores')"><i class="bi bi-tags-fill" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Proveedores</button>
+                            </div>
+                        </div>
+                        <div class="row gx-2 gy-2 mb-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('agentes')"><i class="bi bi-briefcase-fill" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Agentes</button> 
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('departamentos')"><i class="bi bi-person-bounding-box" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Empleados</button>
+                            </div>
+                        </div>
+                        <div class="row gx-2 gy-2 mb-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('almacenes')"><i class="bi bi-upc-scan" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Almacenes</button> 
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('agencias')"><i class="bi bi-truck" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Agencias</button>
+                            </div>
+                        </div>
+                        <div class="row gx-2 gy-2 mb-2">
+                            <div class="col-6">    
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('deudores')"><i class="bi bi-person-plus-fill" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Deudores</button>
+                            </div>
+                            <div class="col-6">   
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('acreedores')"><i class="bi bi-person-dash-fill" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Acreedores</button>  
+                            </div> 
+                        </div>
+                        <div class="row gx-2 gy-2">
+                            <div class="col-6">   
+                                <button type="button" class="btn btn-success w-100" onclick="abrirDesdePrincipal('bancos')"><i class="bi bi-bank" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Bancos</button>  
+                            </div>                                
+                            <div class="col-6">
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-success dropdown-toggle" id="submenuUtilidades" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-tools" style="font-size: 1.6rem; color: orange;"></i>&nbsp; Utilidades </button>
+                                    <ul class="dropdown-menu bg-info pre-scrollable" aria-labelledby="submenuUtilidades">
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('empresas')">Empresas</li>
+                                        <li class="dropdown-divider"></li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('gruposclientes')">Grupos clientes</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('zonas')">Zonas</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('proyectos')">Proyectos</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('tiposatencion')">Tipos atención</li>
+                                        <li class="dropdown-divider"></li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('formaspago')">Formas de pago</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('cuentastesoreria')">Ctas. tesorería</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('cuentasremesas')">Ctas. remesas</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('divisas')">Divisas</li>
+                                        <li class="dropdown-divider"></li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('usuarios')">Usuarios</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('gruposusuarios')">Grupos usuarios</li>
+                                        <li class="dropdown-item" onclick="abrirDesdePrincipal('cambiarcontrasena');">Cambiar contraseña</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div id="myTextDataList"></div>
+
+</body>
+</html>

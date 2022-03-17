@@ -1,0 +1,17 @@
+{
+  "short_name": "MisContactos",
+  "name": "Mis contactos",
+  "description": "Localiza a tu cliente para llamarle, enviarle un e-mail, whatsapp o sms.",
+  "lang": "es-ES",
+  "start_url": "index.html",
+  "scope": ".",
+  "display": "standalone", 
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#FFF"
+}

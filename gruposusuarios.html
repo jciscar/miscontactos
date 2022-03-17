@@ -1,0 +1,1064 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Grupos de usuarios</title>
+
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="lib/icons/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.min.css">
+    <script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+
+    <script src="lib/bootstrap-table/dist/locale/bootstrap-table-es-ES.min.js"></script>
+    
+    <script src="lib/bootstrap-table/dist/tableExport.min.js"></script>
+    <script src="lib/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+
+  	<script src="lib/gp/libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="lib/ico/logo.ico">	
+
+	<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after     { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    }   
+
+    .success {
+            background: #92c5fc;
+            font-weight: bold;
+    }   
+
+    .success1 {
+            background: #92c5fc;
+            font-weight: bold;
+    }       
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; }
+
+
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+	  visibility: hidden; /* Hidden by default. Visible on click */
+	  min-width: 250px; /* Set a default minimum width */
+	  margin-left: -125px; /* Divide value of min-width by 2 */
+	  background-color: #333; /* Black background color */
+	  color: #fff; /* White text color */
+	  text-align: center; /* Centered text */
+	  border-radius: 2px; /* Rounded borders */
+	  padding: 16px; /* Padding */
+	  position: fixed; /* Sit on top of the screen */
+	  z-index: 1; /* Add a z-index if needed */
+	  left: 50%; /* Center the snackbar */
+	  bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+	  visibility: visible; /* Show the snackbar */
+	  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+	  However, delay the fade out process for 2.5 seconds */
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}    
+
+	</style>
+
+  </head>
+  <body class="bg-light" onunload="nomcargar()">
+
+  <script>
+
+    // gestión ventanas. Es la función que se ejecutar en onunload de body
+    function nomcargar() { nompuesDeCerrarVentana('nExtGruposUsuarios', 'gruposusuarios'); }
+
+  	var $table = document.getElementById('tabGruposUsuarios');
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+    	compProcedencia();
+		// gestión ventanas
+		despuesDeAbrirVentana('nExtGruposUsuarios', 'gruposusuarios');
+
+		$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+		cambiarAltoTabla();
+		return false;
+
+    });
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabGruposUsuarios');
+		if (window.nExtGruposUsuarios != 0) { msjDblClic(); }
+		return false;
+	});	
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+	function eliminarGrupoUsuarios(){	
+		let formDataE = new FormData();
+		formDataE.append("nform", 'gruposusuarios');
+		formDataE.append("codnum", window.idTabGruposUsuarios);
+		formDataE.append("opcionlistado", 3);
+		async function comprobarAntesDeEliminar() {
+			const comprobarResponse = await fetch('php/comprobar_antes_de_editar_o_eliminar.php', {
+	      		method: 'POST',
+	      		body: 	formDataE
+	    	});
+			const dataE = await comprobarResponse.json();
+			return dataE;
+		}
+		comprobarAntesDeEliminar().then((dataE) => {
+			if (dataE == '[object Object]') {
+				let myModal = new bootstrap.Modal(document.getElementById('formEliminarGrupoUsuarios'));
+				myModal.show();
+				codE.defaultValue = dataE.cod;
+				nomE.defaultValue = dataE.nom;
+			} else {
+				document.getElementById('msjGrupoUsuarios').innerText = dataE;
+				let myModal = new bootstrap.Modal(document.getElementById('dialogoGrupoUsuarios'));
+				myModal.show();
+			};				
+		}).catch(error => {
+			alert(error.message);
+		});
+        return false;
+	}
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			 <div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm" id="NuevoGrupoUsuarios" title="Nuevo grupo de usuarios" data-toggle="tooltip" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EditarGrupoUsuarios" title="Editar grupo de usuarios" data-toggle="tooltip" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EliminarGrupoUsuarios" title="Eliminar grupo de usuarios" data-toggle="tooltip" onClick="eliminarGrupoUsuarios()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="VerGrupoUsuarios" title="Ver grupo de usuarios" data-toggle="tooltip" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-2 mb-2">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Grupos de usuarios</a>
+		</div>
+
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nuevo grupo de usuarios</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar grupo de usuarios</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarGrupoUsuarios()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar grupo de usuarios</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalGrupoUsuarios', 'opcionGrupoUsuarios', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver grupo de usuarios</a></li>				
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabGruposUsuarios')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Grupos de usuarios', tabGruposUsuarios)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenu"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenu">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabGruposUsuarios')">
+					<label class="form-check-label" for="vistaTarjeta"></label>
+				</div>		
+			</div>
+
+			<div class="btn-group" role="group">
+
+				<button class="btn btn-success btn-sm d-none d-md-block" id="imprimirGruposUsuarios" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Grupos de usuarios', tabGruposUsuarios)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="exportarGruposUsuarios" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar tabla">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','GruposUsuarios','Tabla de Grupos de usuarios',100, 'tabGruposUsuarios')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabGruposUsuarios','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+		<div class="col-auto mt-2 mb-2">
+		  	<div class="btn-group" role="group">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick="cerrarVentana('nExtGruposUsuarios')" title="Cerrar" data-toggle="tooltip" style="text-align:right;"></button>				
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+    opcionesTablaSubmenu.addEventListener('click',  (e) => { 
+        e.stopPropagation();
+    });
+
+    opcionesExportarSubmenu.addEventListener('click',   (e) => { 
+        e.stopPropagation();
+    });
+
+</script>
+
+<div id="snackbar">Doble clic para seleccionar grupo usuarios</div>
+
+<div class="container-fluid">
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabGruposUsuarios" data-url="./php/datosTabla.php?vista=gruposusuarios" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="cod" data-undefined-text=""
+
+    data-unique-id="cod"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabGruposUsuarios"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="cod"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+    data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"     
+
+    data-export-data-type="all"
+
+    data-row-style="rowStyle"
+
+    data-cache="false"    
+
+    >
+
+    
+    <thead class="bg-dark text-light">
+        <tr>
+			<th data-field="cod" data-sortable="true" data-click-to-select="true" data-switchable="false">Código</th>
+			<th data-field="nom" data-sortable="true" data-click-to-select="true">Nombre</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+
+<!-- Comienzo modal form grupo de usuarios -->
+<div class="modal fade" id="modalGrupoUsuarios" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-lg">
+      	<div class="modal-content"> 
+
+	        <!-- Modal Header -->
+	      	<div class="modal-header bg-dark bg-gradient sticky-top">
+	        	<div class="col-6">
+	            	<a class="navbar-brand text-warning" id="exampleModalLabel">Grupo de usuarios</a>
+	          	</div>
+				<div class="col-auto" style="text-align:right;">
+					<form id="formGrupoUsuarios">
+					<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+					<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+				</div>
+				<div class="col-1" style="text-align:right;">
+			        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+			        </button>
+			    </div>
+			</div>
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+		        <div class="container-fluid">
+					<div class="row gx-3 gy-3">
+						<div class="col-auto">
+							<input type="text" name="cod" id="cod" size=5 placeholder="Código" maxlength="5" required class="form-control" data-toggle="tooltip" title="Código">
+						</div>						
+
+						<div class="col-auto">
+							<input type="text" name="nom" id="nom" size=30 placeholder="Nombre" maxlength="30" class="form-control" data-toggle="tooltip" title="Nombre">
+						</div>
+					</div>
+
+					<div class="row mt-3">
+						<h6>Haga clic sobre los botones para activar/desactivar los permisos</h6>
+					</div>
+
+					<div class="row mt-1">
+
+						<div class="col-4">
+							<p>Clientes</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="clie1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="clie2" title="Añadir" data-toggle="tooltip" onClick="activar(this)" ><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="clie3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="clie4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="clie5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="clie6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Proveedores</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="prov1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="prov2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="prov3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="prov4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="prov5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="prov6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Agentes</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="agen1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="agen2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="agen3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="agen4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="agen5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="agen6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Empleados</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="empl1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="empl2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empl3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empl4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="empl5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empl6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Almacenes</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="alma1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="alma2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="alma3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="alma4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="alma5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="alma6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Agencias</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="tran1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="tran2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tran3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tran4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="tran5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tran6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Deudores</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="deud1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="deud2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="deud3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="deud4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="deud5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="deud6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Acreedores</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="acre1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="acre2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="acre3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="acre4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="acre5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="acre6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>	
+
+						<div class="col-4">
+							<p>Bancos</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="banc1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="banc2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="banc3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="banc4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="banc5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="banc6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Empresas</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="empr1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="empr2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empr3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empr4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="empr5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="empr6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Grupos de clientes</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="gcli1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="gcli2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="gcli3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="gcli4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="gcli5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="gcli6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Zonas</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="zona1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="zona2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="zona3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="zona4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="zona5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="zona6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Proyectos</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="proy1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="proy2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="proy3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="proy4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="proy5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="proy6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Tipos atención</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="tipa1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="tipa2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tipa3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tipa4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="tipa5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="tipa6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Formas de pago</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="fpag1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="fpag2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="fpag3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="fpag4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="fpag5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="fpag6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Ctas. tesorería</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="ctat1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="ctat2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctat3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctat4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="ctat5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctat6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Ctas. remesas</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="ctar1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="ctar2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctar3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctar4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="ctar5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="ctar6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<p>Divisas</p>
+						</div>
+						<div class="col-8">
+					  		<button class="btn btn-success btn-sm" type="button" id="divi1" title="Ver" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-fill"></i></button>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="divi2" title="Añadir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-plus-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="divi3" title="Editar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-lines-fill"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="divi4" title="Eliminar" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-person-dash-fill"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button class="btn btn-success btn-sm" type="button" id="divi5" title="Imprimir" data-toggle="tooltip" onClick="activar(this)"><i class="bi bi-printer"></i></button>
+								<button class="btn btn-success btn-sm" type="button" id="divi6" title="Exportar" data-toggle="tooltip" onClick="activar(this)"><i class="bi-file-earmark-arrow-down"></i></button>
+							</div>
+						</div>
+
+					</div>
+
+
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	function activar(b) {
+		if (window.opcionGrupoUsuarios === 4) { return false; }
+		if (b.classList.contains('bg-transparent')) { b.classList.remove('bg-transparent'); } else { b.classList.add('bg-transparent'); }
+	}
+
+	function agruparInf(s) {
+		let res = '';
+		for (let i = 1; i < 7; i++) {
+			if (document.getElementById(s + i).classList.contains('bg-transparent')) {
+				res += '0';
+			} else {
+				res += '1';
+			}	
+		}
+		return res;
+	}
+
+	function asignarInf(d) {
+		var s = nomFormInt(d.NombreFormInterno);
+		if (d.ver == 0) 		{ document.getElementById(s + '1').classList.add('bg-transparent'); } else { document.getElementById(s + '1').classList.remove('bg-transparent'); }
+		if (d.anadir == 0) 		{ document.getElementById(s + '2').classList.add('bg-transparent'); } else { document.getElementById(s + '2').classList.remove('bg-transparent'); }
+		if (d.modificar == 0) 	{ document.getElementById(s + '3').classList.add('bg-transparent'); } else { document.getElementById(s + '3').classList.remove('bg-transparent'); }
+		if (d.eliminar == 0) 	{ document.getElementById(s + '4').classList.add('bg-transparent'); } else { document.getElementById(s + '4').classList.remove('bg-transparent'); }
+		if (d.imprimir == 0) 	{ document.getElementById(s + '5').classList.add('bg-transparent'); } else { document.getElementById(s + '5').classList.remove('bg-transparent'); }
+		if (d.exportar == 0) 	{ document.getElementById(s + '6').classList.add('bg-transparent'); } else { document.getElementById(s + '6').classList.remove('bg-transparent'); }					
+	}
+
+	function removerTodo(s) {
+		for (let i = 1; i < 7; i++) { document.getElementById(s + i).classList.remove('bg-transparent'); }
+	}
+
+	cod.addEventListener('blur', (event) => {
+		if (window.opcionGrupoUsuarios === 1) {
+		  	window.idTabGruposUsuarios = cod.value;
+		}
+	});
+
+	modalGrupoUsuarios.addEventListener('show.bs.modal', function (e) {	
+		if (window.opcionGrupoUsuarios === 1) {
+			cod.defaultValue 	= '';
+			nom.defaultValue 	= '';
+			
+			cod.readOnly 		= false;
+			nom.readOnly 		= false;
+
+			aceptar.hidden 		= false;
+      		cancelar.hidden 	= false;
+
+      		removerTodo('clie');
+      		removerTodo('prov');
+      		removerTodo('agen');
+      		removerTodo('empl');
+			removerTodo('empr');
+			removerTodo('gcli');
+			removerTodo('alma');
+			removerTodo('proy');
+			removerTodo('zona');
+			removerTodo('tran');
+			removerTodo('fpag');
+			removerTodo('ctat');
+			removerTodo('ctar');
+			removerTodo('divi');
+			removerTodo('banc');
+			removerTodo('tipa');
+			removerTodo('acre');
+			removerTodo('deud');
+		}
+
+		if (window.opcionGrupoUsuarios === 2 || window.opcionGrupoUsuarios === 4) {
+			let queries2 = "SELECT `Nombre` AS `nom` FROM `gruposusuarios` where `Código` = '" + window.idTabGruposUsuarios + "';";
+			queries2 	+= "SELECT NombreFormInterno, ver, `añadir` as anadir, modificar, eliminar, imprimir, exportar FROM `permisosgruposusuarios` where (`Código grupo` = '" + window.idTabGruposUsuarios + "') and (NombreFormInterno = 'f_clie' or NombreFormInterno = 'f_prove' or NombreFormInterno = 'f_age' or NombreFormInterno = 'departamentos' or NombreFormInterno = 'empresas' or NombreFormInterno = 'GruposClientes' or NombreFormInterno = 'almacenes' or NombreFormInterno = 'proyectos' or NombreFormInterno = 'zonas' or NombreFormInterno = 'agencias' or NombreFormInterno = 'formas_de_pago' or NombreFormInterno = 'ctas_tesoreria' or NombreFormInterno = 'ctasRemesas' or NombreFormInterno = 'divisas' or NombreFormInterno = 'bancos' or NombreFormInterno = 'tipo_atencion' or NombreFormInterno = 'acreedores' or NombreFormInterno = 'deudores');";
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 1);
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+				cod.defaultValue 	= window.idTabGruposUsuarios;
+				nom.defaultValue 	= data[0].nom;
+				
+				for (var i = 1; i < 19; i++) { 
+					asignarInf(data[i]); 
+				}
+			}).catch(error => {
+            	alert(error.message);
+        	})
+
+		}
+
+		if (window.opcionGrupoUsuarios === 2) {
+			cod.readOnly 			= true;
+			nom.readOnly 			= false;
+			aceptar.hidden 			= false;
+      		cancelar.hidden 		= false;
+		}		
+
+		if (window.opcionGrupoUsuarios === 4) {
+			cod.readOnly 			= true;
+			nom.readOnly 			= true;
+			aceptar.hidden 			= true;
+      		cancelar.hidden 		= true;
+		}
+
+		document.getElementById('formGrupoUsuarios').reset();
+
+	})
+
+
+	formGrupoUsuarios.onsubmit = async (e) => {
+		e.preventDefault();
+
+		var numFilas = Object.keys($('#modalGrupoUsuarios').bootstrapTable('getData')).length;
+	    let fila2 = {
+				     	cod: cod.value,	     
+				        nom: nom.value
+				    };
+
+       	//$('#tabGruposUsuarios').bootstrapTable('scrollTo', 'bottom')
+    	//$('#tabGruposUsuarios').bootstrapTable('scrollTo', {unit: 'rows', value: index})
+		async function datosDevueltos1() {
+			let formData1 = new FormData(formGrupoUsuarios);
+			formData1.append('opcionListado', window.opcionGrupoUsuarios);
+			formData1.append('clie', agruparInf('clie'));
+			formData1.append('prov', agruparInf('prov'));
+			formData1.append('agen', agruparInf('agen'));
+			formData1.append('empl', agruparInf('empl'));
+			formData1.append('empr', agruparInf('empr'));
+			formData1.append('gcli', agruparInf('gcli'));			
+			formData1.append('alma', agruparInf('alma'));
+			formData1.append('proy', agruparInf('proy'));
+			formData1.append('zona', agruparInf('zona'));
+			formData1.append('tran', agruparInf('tran'));
+			formData1.append('fpag', agruparInf('fpag'));
+			formData1.append('ctat', agruparInf('ctat'));
+			formData1.append('ctar', agruparInf('ctar'));
+			formData1.append('divi', agruparInf('divi'));
+			formData1.append('banc', agruparInf('banc'));			
+			formData1.append('tipa', agruparInf('tipa'));
+			formData1.append('acre', agruparInf('acre'));
+			formData1.append('deud', agruparInf('deud'));
+
+            const response1 = await fetch('php/grupousuarios.php', {
+                method: 'POST',
+                body:   formData1
+            });
+            const data1 = await response1.json();
+            return data1;
+		}
+
+        datosDevueltos1().then((data1) => {
+			if (data1 == '0') {
+				if (window.opcionGrupoUsuarios === 1) {
+					$('#tabGruposUsuarios').bootstrapTable('append', fila2);
+					window.idTabGruposUsuarios = cod.value;
+				} else {
+					$('#tabGruposUsuarios').bootstrapTable('updateByUniqueId', {
+        				id: window.idTabGruposUsuarios,
+        				row: fila2,
+				        replace: false
+					});
+				}
+				$('#modalGrupoUsuarios').modal('hide');
+            } else if (data1 == '1') {
+            	cod.focus();
+                msjGrupoUsuarios.innerHTML = 'Código ya existente';
+                let myModalNuevo1 = new bootstrap.Modal(dialogoGrupoUsuarios);
+                myModalNuevo1.show();                           
+            } else if (data1 == '2') {
+            	nom.focus();
+                msjGrupoUsuarios.innerHTML = 'Nombre ya existente';
+                let myModalNuevo2 = new bootstrap.Modal(dialogoGrupoUsuarios);
+                myModalNuevo2.show();
+            } else {
+                msjGrupoUsuarios.innerHTML=data1;
+                let myModalNuevo3 = new bootstrap.Modal(dialogoGrupoUsuarios);
+                myModalNuevo3.show();
+            }
+        }).catch(error => {
+            alert(error.message);
+        })			
+	    
+	}
+
+</script>
+
+
+
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoGrupoUsuarios" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">GestiónPYME</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjGrupoUsuarios">No se puede eliminar el grupo de usuarios por defecto</p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+</div>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarGrupoUsuarios" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+      	  	
+          	<!-- Modal Header -->
+          	<div class="modal-header bg-light">
+              	<h5 class="modal-title">Grupo de usuarios</h5>
+          		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          	</div>       
+          	<!-- Modal body -->
+          	<div class="modal-body">
+	        	<div class="container-fluid">
+	        		<form id="formDel">
+						<div class="row gx-3 gy-3">
+							<div class="col-auto">
+								<input type="text" name="codE" id="codE" size=5 disabled data-toggle="tooltip" title="Código">
+							</div>					
+							<div class="col-auto">
+								<input type="text" name="nomE" id="nomE" size=40 disabled data-toggle="tooltip" title="Nombre">
+							</div>
+						</div>
+					</form>														
+				</div>
+		  	</div>
+          
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar Grupo de usuarios? </p>  
+		        </div>
+		        <button type="button" class="btn btn-primary" id="SiEliminarGrupoUsuarios" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarGrupoUsuarios" data-bs-dismiss="modal">No</button>
+	        </div>
+
+    	</div>
+  	</div>  
+</div>
+<script>
+    $('#SiEliminarGrupoUsuarios').on('click', function(event) {
+		let formData3 = new FormData();
+		formData3.append("cod", window.idTabGruposUsuarios);
+		formData3.append("opcionListado", 3);
+		async function eliminaGrupoUsuarios() {
+			const response3 = await fetch('php/grupousuarios.php', {
+	      		method: 'POST',
+	      		body: 	formData3,
+	    	});
+			const data3 = await response3.json();
+			return data3;
+		}
+		eliminaGrupoUsuarios().then((data3) => {
+			let eliGrupoUsuarios = eliminarReg1('tabGruposUsuarios', 'idTabGruposUsuarios', 'cod', '');	
+		}).catch(error => {
+			alert(error.message);
+		});
+    });
+
+
+</script>
+
+
+<script>
+	var $table 		=  $('#tabGruposUsuarios');
+	var numTab 		=  0;
+	var indiceFila	= -1;
+	var refresco 	= -1;
+	var iPos 		=  0;
+
+  	$(function() {
+	    $table.on('click-row.bs.table', function (e, row, $element) {
+	    	window.idTabGruposUsuarios 		= row.cod;
+	    	indiceFila						= $element.index();
+	    	iPos							= $table.bootstrapTable('getScrollPosition');
+			$('.success').removeClass('success');
+	    	$element.addClass('success');
+	    	return false;				
+	    })
+
+	    //$table.on('all.bs.table', function (e, name, args) {
+	      //alert(name, args)
+	    //})
+
+	    $table.on('dbl-click-row.bs.table', function (e, row, $element) {
+	        // gestión ventanas
+	        seleccionarRegistroYcerrar('nExtGruposUsuarios', row.cod, row.nom, '');
+	    }) 
+
+	    $table.on('sort.bs.table', function (name, order) { 
+	    	refresco 	= -1;
+	    	return false;
+	    })
+
+	    $table.on('search.bs.table', function (text) {
+	    	refresco 	= -1;
+	    	return false;
+	    }) 
+
+	    $table.on('post-body.bs.table', function () {
+				setTimeout(
+			    function () {
+
+			    	// refresco nompués de inicio, buscar u ordenar
+			    	if (refresco == -1) {
+							iPos 						= 0;
+							window.idTabGruposUsuarios 	= '';
+							indiceFila					= seleccionarFila('tabGruposUsuarios', 'idTabGruposUsuarios', 'cod', 'success');
+		    			refresco 						= 0;
+		    			return false;
+			    	}
+
+			    	// refresco nompués de añadir o eliminar
+			    	if (refresco == 1) {
+			    		indiceFila						= indice(window.idTabGruposUsuarios, 'cod', 'tabGruposUsuarios');
+						iPos 							= Math.abs(tabGruposUsuarios.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+			    	}
+
+			    	// refresco regular
+			    	$table.bootstrapTable('scrollTo', iPos);
+			    	refresco = 0;
+			    	return false;
+
+				}, 500);
+	    })
+
+	})
+
+	window.icons = {
+		detailOpen: 'bi-caret-down-fill',
+		detailClose: 'bi-caret-up-fill'
+	}; 	
+
+	function rowStyle(row) {
+	  let customClass = "";
+	  if (row.cod == window.idTabGruposUsuarios) { customClass = 'success'; }
+	  else {}
+	  return { classes: customClass };
+	}	
+
+	function refrescar(n) {
+	    refresco = n;
+	    $table.bootstrapTable('refresh');
+	    return false;
+  	}
+
+</script>
+
+
+  </body>
+</html>

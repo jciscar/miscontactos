@@ -1,0 +1,1001 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Bancos</title>
+
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="lib/icons/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.min.css">
+    <script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+
+    <script src="lib/bootstrap-table/dist/locale/bootstrap-table-es-ES.min.js"></script>
+    
+    <script src="lib/bootstrap-table/dist/tableExport.min.js"></script>
+    <script src="lib/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+
+  	<script src="lib/gp/libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="lib/ico/logo.ico">	
+
+<style>
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after     { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    }   
+
+    .success {
+            background: #92c5fc;
+            font-weight: bold;
+    }   
+
+    .success1 {
+            background: #92c5fc;
+            font-weight: bold;
+    }       
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; }
+
+
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+	  visibility: hidden; /* Hidden by default. Visible on click */
+	  min-width: 250px; /* Set a default minimum width */
+	  margin-left: -125px; /* Divide value of min-width by 2 */
+	  background-color: #333; /* Black background color */
+	  color: #fff; /* White text color */
+	  text-align: center; /* Centered text */
+	  border-radius: 2px; /* Rounded borders */
+	  padding: 16px; /* Padding */
+	  position: fixed; /* Sit on top of the screen */
+	  z-index: 1; /* Add a z-index if needed */
+	  left: 50%; /* Center the snackbar */
+	  bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+	  visibility: visible; /* Show the snackbar */
+	  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+	  However, delay the fade out process for 2.5 seconds */
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+	    
+
+</style>
+
+  </head>
+  <body class="bg-light" onunload="descargar()">
+
+  <script>
+  	// gestión ventanas. Es la función que se ejecutar en onunload de body
+    function descargar() { despuesDeCerrarVentana('nExtBancos', 'bancos'); }
+
+  	var $table = document.getElementById('tabBancos');
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+    	compProcedencia();
+      	// gestión ventanas
+      	despuesDeAbrirVentana('nExtBancos', 'bancos');
+
+		$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+		permisosVentana('bancos');
+		cambiarAltoTabla();
+		return false;
+    });
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabBancos');
+		if (window.nExtBancos != 0) { msjDblClic(); }
+		return false;
+	});	
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		barraPaginacion('#tabBancos');
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+
+
+	function eliminarBanco(){	
+		let formDataE = new FormData();
+		formDataE.append("nform", 'bancos');
+		formDataE.append("codnum", window.autoBanco);
+		formDataE.append("opcionlistado", 3);
+		async function comprobarAntesDeEliminar() {
+			const comprobarResponse = await fetch('php/comprobar_antes_de_editar_o_eliminar.php', {
+	      		method: 'POST',
+	      		body: 	formDataE
+	    	});
+			const dataE = await comprobarResponse.json();
+			return dataE;
+		}
+		comprobarAntesDeEliminar().then((dataE) => {
+			if (dataE == '[object Object]') {
+				let myModal = new bootstrap.Modal(document.getElementById('formEliminarBanco'));
+				myModal.show();
+				entE.defaultValue = formatBanco(dataE.ent, 4);
+				ofiE.defaultValue = formatBanco(dataE.ofi, 4);
+				nenE.defaultValue = dataE.nen || '';
+				nofE.defaultValue = dataE.nof || '';
+			} else {
+				document.getElementById('msjBanco').innerText = dataE;
+				let myModal = new bootstrap.Modal(document.getElementById('dialogoBanco'));
+				myModal.show();
+			};				
+		}).catch(error => {
+			alert(error.message);
+		});
+    	return false;
+	}
+
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			 <div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm" id="NuevoBanco" title="Nueva oficina bancaria" data-toggle="tooltip" onClick="regTabla('modalBanco', 'opcionBanco', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EditarBanco" title="Editar oficina bancaria" data-toggle="tooltip" onClick="regTabla('modalBanco', 'opcionBanco', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EliminarBanco" title="Eliminar oficina bancaria" data-toggle="tooltip" onClick="eliminarBanco()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="VerBanco" title="Ver oficina bancaria" data-toggle="tooltip" onClick="regTabla('modalBanco', 'opcionBanco', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-2 mb-2">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Oficinas bancarias</a>
+		</div>
+
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalBanco', 'opcionBanco', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nueva oficina bancaria</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalBanco', 'opcionBanco', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar oficina bancaria</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarBanco()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar oficina bancaria</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalBanco', 'opcionBanco', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver oficina bancaria</a></li>		
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabBancos')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+						<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasBancos', 0)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>		  			
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Bancos', tabBancos)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropstart"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenu"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenu">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','Bancos','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','Bancos','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','Bancos','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','Bancos','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','Bancos','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabBancos')">
+					<label class="form-check-label" for="vistaTarjeta"></label>
+				</div>
+			</div>
+
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm d-none d-md-block" id="columnasBancos" title="Mostrar columnas" data-toggle="tooltip" onClick="mostrarColumnas('modalColumnasTablasBancos', 0)"><i class="bi-layout-three-columns" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm d-none d-md-block" id="imprimirBancos" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Oficinas Bancarias', tabBancos)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="exportarBancos" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar tabla" data-toggle="tooltip">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','Oficinas Bancarias','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','Oficinas Bancarias','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','Oficinas Bancarias','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','Oficinas Bancarias','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','Oficinas Bancarias','Tabla de Oficinas Bancarias',100, 'tabBancos')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabBancos','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+		<div class="col-auto mt-2 mb-2">
+		  	<div class="btn-group" role="group">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick="cerrarVentana('nExtBancos')" title="Cerrar" data-toggle="tooltip" style="text-align:right;"></button>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+    opcionesTablaSubmenu.addEventListener('click',  (e) => { 
+        e.stopPropagation();
+    });
+
+    opcionesExportarSubmenu.addEventListener('click',   (e) => { 
+        e.stopPropagation();
+    });
+
+</script>
+
+<div id="snackbar">Doble clic para seleccionar el banco</div>
+
+<!-- data-virtual-scroll siempre debe ser con el valor "false" para que funcione correctamente el scrolling vertical -->
+
+<div class="container-fluid" id="contenedor">
+	<table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabBancos" data-url="./php/datosTabla.php?vista=bancos" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="aut" data-undefined-text=""
+
+    data-unique-id="aut"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="true"
+    data-page-size="100"
+    data-show-pagination-switch="false"
+    data-show-extended-pagination="false"
+    data-pagination-parts="['pageList']"
+
+    data-id-table="tabBancos"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="ent"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+	data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"
+
+    data-export-data-type="all"
+
+    data-detail-view="true"
+    data-detail-formatter="detailFormatter"
+    data-row-style="rowStyle"
+
+    data-cache="false"
+   
+    >
+    
+    <thead class="bg-dark text-light">
+	    <tr>
+	    	<th data-field="aut" data-sortable="false" data-click-to-select="true" data-visible="false" data-searchable="false" data-switchable="false" data-print-ignore="true" data-force-hide="true" data-card-visible="false"></th>
+		    <th data-field="ent" data-sortable="true" data-click-to-select="true" data-switchable="false">Entidad</th>
+		    <th data-field="ofi" data-sortable="true" data-click-to-select="true" data-switchable="false">Oficina</th>
+		    <th data-field="nen" data-sortable="true" data-click-to-select="true" data-switchable="false">Nombre entidad</th>
+		    <th data-field="nof" data-sortable="true" data-click-to-select="true" data-switchable="false">Nombre oficina</th>
+		    <th data-field="bic" data-sortable="true" data-click-to-select="true">BIC</th>
+		    <th data-field="dom" data-sortable="true" data-click-to-select="true" data-visible="false">Dirección</th>
+		    <th data-field="cpo" data-sortable="true" data-click-to-select="true" data-visible="false">C. P.</th>
+		    <th data-field="pob" data-sortable="true" data-click-to-select="true" data-visible="false">Población</th>
+		    <th data-field="pro" data-sortable="true" data-click-to-select="true" data-visible="false">Provincia</th>
+		    <th data-field="pai" data-sortable="true" data-click-to-select="true" data-visible="false">País</th>
+		    <th data-field="per" data-sortable="true" data-click-to-select="true" data-visible="false">Persona de contacto</th>
+		    <th data-field="te1" data-sortable="true" data-click-to-select="true" data-visible="false">Teléfono 1</th>
+		    <th data-field="te2" data-sortable="true" data-click-to-select="true" data-visible="false">Teléfono 2</th>
+		    <th data-field="fax" data-sortable="true" data-click-to-select="true" data-visible="false">Fax</th>
+		    <th data-field="cor" data-sortable="true" data-click-to-select="true" data-visible="false">E-mail</th>
+		</tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+  </table>
+
+</div>
+
+</div>
+
+
+<!-- Comienzo modal form banco -->
+<div class="modal fade" id="modalBanco" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-xl">
+      	<div class="modal-content">
+	        <!-- Modal Header -->
+	      	<div class="modal-header bg-dark bg-gradient sticky-top">
+	        	<div class="col-6">
+	            <a class="navbar-brand text-warning" id="exampleModalLabel">Oficina bancaria</a>
+	          </div>
+						<div class="col-auto" style="text-align:right;">
+							<form id="formBanco">
+							<button type="submit" class="btn btn-success text-white mr-3" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+							<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+						</div>
+						<div class="col-1" style="text-align:right;">
+        			<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+          		</button>
+          	</div>
+					</div>
+
+
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+		        <div class="container-fluid">
+					<div class="row align-items-end gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<label for="ent">Entidad</label>
+							<input type="text" name="ent" id="ent" maxlength=4 size=4 required class="form-control" title="Código numérico de la entidad bancaria. Máximo 4 caracteres" data-toggle="tooltip">	
+						</div>					
+						<div class="col-auto">
+							<input type="text" name="nen" id="nen" placeholder="Nombre entidad" maxlength=40 size=40 required class="form-control" title="Nombre de la entidad bancaria. Máximo 40 caracteres" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row align-items-end gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<label for="ofi">Oficina</label>
+							<input type="text" name="ofi" id="ofi" maxlength=4 size=4 required class="form-control" title="Código numérico de la oficina bancaria. Máximo 4 caracteres" data-toggle="tooltip">	
+						</div>					
+						<div class="col-auto">
+							<input type="text" name="nof" id="nof" placeholder="Nombre oficina" maxlength=40 size=40 class="form-control" title="Nombre de la oficina bancaria. Máximo 40 caracteres. Opcional" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row align-items-end gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<label for="bic">BIC</label>
+							<input type="text" name="bic" id="bic" placeholder="BIC" maxlength=11 size=11 class="form-control" title="Código BIC o SWIFT. Máximo 11 caracteres. Opcional" data-toggle="tooltip">
+						</div>
+					</div>
+
+
+					<div class="row align-items-end gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<input type="text" name="dom" id="dom" size=50 placeholder="Dirección" maxlength="50" class="form-control" title="Dirección">
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="cpo" id="cpo" size=5 placeholder="C. P." maxlength="5" class="form-control" title="Código postal">
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="pob" id="pob" size=30 placeholder="Población" maxlength="30" class="form-control" title="Población">
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="pro" id="pro" size=30 placeholder="Provincia" maxlength="30" class="form-control" title="Provincia">
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="pai" id="pai" size=30 placeholder="País" maxlength="30" class="form-control" title="País">
+						</div>
+
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="text" name="te1" id="te1" placeholder="Teléfono 1" maxlength="25" size=25 class="form-control" title="Teléfono 1">
+								<div class="input-group-append">
+									<div class="btn-group">
+  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1D" data-bs-toggle="dropdown" aria-expanded="false">
+  										</button>
+  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1D">
+										    <li><a class="dropdown-item" href="#" id="tel1LlamarD" onclick="hiperenlace(te1.value, 1)"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel1What
+										    	D" onclick="hiperenlace(te1.value, 3)"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel1smsD" onclick="hiperenlace(te1.value, 2)"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+										</ul>
+  									</div>
+  								</div>
+  							</div>
+						</div>
+
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="text" name="te2" id="te2" placeholder="Teléfono 2" maxlength="25" size=25 class="form-control" title="Teléfono 2">
+								<div class="input-group-append">
+									<div class="btn-group">
+  										<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2D" data-bs-toggle="dropdown" aria-expanded="false">
+  										</button>
+  										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2D">
+										    <li><a class="dropdown-item" href="#" id="tel2LlamarD" onclick="hiperenlace(te2.value, 1)"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel2WhatD" onclick="hiperenlace(te2.value, 3)"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li>
+										    <li><a class="dropdown-item" href="#" id="tel2smsD" onclick="hiperenlace(te2.value, 2)"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li>
+										</ul>
+  									</div>
+  								</div>
+  							</div>
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="fax" id="fax" size=25 placeholder="Fax" maxlength="25" class="form-control" title="Fax">
+						</div>
+
+						<div class="col-auto">
+							<div class="input-group">
+								<input type="email" name="cor" id="cor" placeholder="Correo electrónico" maxlength="50" size=50 class="form-control" title="Correo electrónico">
+								<div class="input-group-append">
+								<button type="button" class="btn btn-outline-secondary ml-auto" id="abrirD" title="Enviar un mensaje" onclick="hiperenlace(cor.value, 5)"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-auto">
+							<input type="text" name="per" id="per" size=40 placeholder="Persona de contacto" maxlength="40" class="form-control" title="Persona de contacto">
+						</div>
+
+					</div>
+
+				</div>
+
+				</form>
+			</div>
+		
+		</div>
+	</div>
+</div>
+
+<script>
+
+	ent.addEventListener('blur', (event) => {
+		ent.value = cadenaCeros(ent.value, 4);
+	})
+
+	ofi.addEventListener('blur', (event) => {
+		ofi.value = cadenaCeros(ofi.value, 4);
+	})
+
+
+	modalBanco.addEventListener('show.bs.modal', function (e) {	
+		if (window.opcionBanco === 1) {
+
+			ent.defaultValue 		= '0000';
+			ofi.defaultValue 		= '0000';
+			nen.defaultValue 		= '';
+			nof.defaultValue 		= '';
+			bic.defaultValue 		= '';
+			dom.defaultValue 		= '';
+			cpo.defaultValue 		= '';
+			pob.defaultValue 		= '';
+			pro.defaultValue 		= '';
+			pai.defaultValue 		= '';
+			per.defaultValue 		= '';
+			te1.defaultValue 		= '';
+			te2.defaultValue 		= '';
+			fax.defaultValue 		= '';
+			cor.defaultValue 		= '';
+			
+			ent.readOnly 				= false;
+			ofi.readOnly 				= false;
+			nen.readOnly 				= false;
+			nof.readOnly 				= false;
+			bic.readOnly 				= false;
+			dom.readOnly 				= false;
+			cpo.readOnly 				= false;
+			pob.readOnly 				= false;
+			pro.readOnly 				= false;
+			pai.readOnly 				= false;
+			per.readOnly 				= false;
+			te1.readOnly 				= false;
+			te2.readOnly 				= false;
+			fax.readOnly 				= false;
+			cor.readOnly 				= false;			
+
+			aceptar.hidden 			= false;
+      cancelar.hidden 		= false;
+
+		}
+
+		if (window.opcionBanco === 2 || window.opcionBanco === 4) {
+
+			let queries2 = "SELECT LPAD(`N_ENTIDAD`, 4, 0) AS `ent`,LPAD(`N_OFICINA`, 4, 0) AS `ofi`,`NOMBRE_ENTIDAD` AS `nen`,`NOMBRE_OFICINA` AS `nof`,`BIC` AS `bic`,`DOMICILIO` AS `dom`,`COD_POSTAL` AS `cpo`,`POBLACION` AS `pob`,`PROVINCIA` AS `pro`,`PAIS` AS `pai`,`PERSONA_CONTACTO` AS `per`,`TELEFONO_1` AS `te1`,`TELEFONO_2` AS `te2`,`FAX` AS `fax`,`CE` AS `cor` from `bancos` where `autoin` = " + window.autoBanco + ";"
+
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 0);
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+
+				ent.defaultValue 		= data[0].ent;
+				ofi.defaultValue 		= data[0].ofi;
+				nen.defaultValue 		= data[0].nen;
+				nof.defaultValue 		= data[0].nof || '';
+				bic.defaultValue 		= data[0].bic || '';
+				dom.defaultValue 		= data[0].dom || '';
+				cpo.defaultValue 		= data[0].cpo || '';
+				pob.defaultValue 		= data[0].pob || '';
+				pro.defaultValue 		= data[0].pro || '';
+				pai.defaultValue 		= data[0].pai || '';
+				per.defaultValue 		= data[0].per || '';
+				te1.defaultValue 		= data[0].te1 || '';
+				te2.defaultValue 		= data[0].te2 || '';
+				fax.defaultValue 		= data[0].fax || '';
+				cor.defaultValue 		= data[0].cor || '';
+
+				if (window.opcionBanco === 2) {
+					ent.readOnly 				= true;
+					ofi.readOnly 				= true;
+					nen.readOnly 				= false;
+					nof.readOnly 				= false;
+					bic.readOnly 				= false;
+					dom.readOnly 				= false;
+					cpo.readOnly 				= false;
+					pob.readOnly 				= false;
+					pro.readOnly 				= false;
+					pai.readOnly 				= false;
+					per.readOnly 				= false;
+					te1.readOnly 				= false;
+					te2.readOnly 				= false;
+					fax.readOnly 				= false;
+					cor.readOnly 				= false;
+					aceptar.hidden 				= false;
+      				cancelar.hidden 			= false;
+				}		
+
+				if (window.opcionBanco === 4) {
+						ent.readOnly 				= true;
+						ofi.readOnly 				= true;
+						nen.readOnly 				= true;
+						nof.readOnly 				= true;
+						bic.readOnly 				= true;
+						dom.readOnly 				= true;
+						cpo.readOnly 				= true;
+						pob.readOnly 				= true;
+						pro.readOnly 				= true;
+						pai.readOnly 				= true;
+						per.readOnly 				= true;
+						te1.readOnly 				= true;
+						te2.readOnly 				= true;
+						fax.readOnly 				= true;
+						cor.readOnly 				= true;					
+						aceptar.hidden 			= true;
+      			cancelar.hidden 		= true;
+				}
+
+			})
+		}
+
+		document.getElementById('formBanco').reset();
+	})
+
+	formBanco.onsubmit = async (e) => {
+		e.preventDefault();
+		var fila2 = {
+			aut: 			0,
+   			ent: 			ent.value,
+			ofi: 			ofi.value,
+			nen: 			nen.value,
+			nof: 			nof.value,
+			bic: 			bic.value,
+			dom: 			dom.value,
+			cpo: 			cpo.value,
+			pob: 			pob.value,
+			pro: 			pro.value,
+			pai: 			pai.value,
+			per: 			per.value,
+			te1: 			te1.value,
+			te2: 			te2.value,
+			fax: 			fax.value,
+			cor: 			cor.value
+    	};
+
+		async function datosDevueltos1() {
+			let formData1 = new FormData(formBanco);
+			formData1.append('esBDempresas', 0);
+			formData1.append('opcionListado', window.opcionBanco);
+			formData1.append('aut',	window.autoBanco);
+			formData1.append('ent',	parseInt(ent.value));
+			formData1.append('ofi',	parseInt(ofi.value));
+	  		const response1 = await fetch('php/banco.php', {
+		        method: 'POST',
+		        body:   formData1
+	  		});
+			const data1 = await response1.json();
+			return data1;
+		}
+
+	    datosDevueltos1().then((data1) => {
+	    	let $table = $('#tabBancos');
+	    	if (data1.toString().substring(0, 4) == 'codN') {
+				$('#modalBanco').modal('hide');
+				fila2.aut = data1.toString().substring(4);
+				// esta línea debe estar siempre delante de la línea de append
+				window.autoBanco = fila2.aut;
+				$table.bootstrapTable('append', fila2);
+				refrescar (1);
+			} else if (data1 == '0') {
+				$('#modalBanco').modal('hide');
+				fila2.aut = window.autoBanco;
+				$table.bootstrapTable('updateByUniqueId', {
+					id: window.autoBanco,
+					row: fila2,
+	        		replace: false
+				});
+			} else if (data1 == '1') {
+				ofi.focus();
+				msjBanco.innerHTML = 'Oficina bancaria ya existente';
+				let myModalNuevo1 = new bootstrap.Modal(dialogoBanco);
+				myModalNuevo1.show();                           
+			} else {
+				msjBanco.innerHTML=data1;
+				let myModalNuevo3 = new bootstrap.Modal(dialogoBanco);
+				myModalNuevo3.show();
+			}
+		}).catch(error => {
+			alert(error.message);
+		})			
+	    
+	}
+
+</script>
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoBanco" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">GestiónPYME</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjBanco">No se puede eliminar el banco</p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+</div>
+
+<!-- Comienzo modal columnas visibles -->
+<div class="modal fade modal-dialog-scrollable" id="modalColumnasTablasBancos" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title">Columnas a mostrar</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+            	<form>
+            		<div class="form-group" id="listFields">
+                	</div>
+            	</form>
+            </div>
+        </div>
+    </div>
+
+<script>
+		modalColumnasTablasBancos.addEventListener('show.bs.modal', function (e) {
+				crearListadoNombresColumnas('modalColumnasTablasBancos');
+				return false;
+		})
+</script>
+
+</div>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarBanco" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+      	  	
+          	<!-- Modal Header -->
+          	<div class="modal-header bg-light">
+              	<h5 class="modal-title">Oficina bancaria</h5>
+          		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          	</div>       
+          	<!-- Modal body -->
+          	<div class="modal-body">
+	        	<div class="container-fluid">
+	        		<form id="formDel">
+
+						<div class="row align-items-end gx-3 gy-3 mb-3">
+							<div class="col-auto">
+								<label for="ent">Entidad</label>
+								<input type="text" name="entE" id="entE" maxlength=4 size=4 readonly class="form-control" title="Código numérico de la entidad bancaria" data-toggle="tooltip">	
+							</div>					
+							<div class="col-auto">
+								<input type="text" name="nenE" id="nenE" maxlength=40 size=40 readonly class="form-control" title="Nombre de la entidad bancaria" data-toggle="tooltip">
+							</div>
+						</div>
+
+						<div class="row align-items-end gx-3 gy-3 mb-3">
+							<div class="col-auto">
+								<label for="ofi">Oficina</label>
+								<input type="text" name="ofiE" id="ofiE" maxlength=4 size=4 readonly class="form-control" title="Código numérico de la oficina bancaria" data-toggle="tooltip">	
+							</div>					
+							<div class="col-auto">
+								<input type="text" name="nofE" id="nofE" maxlength=40 size=40 readonly class="form-control" title="Nombre de la oficina bancaria" data-toggle="tooltip">
+							</div>
+						</div>
+
+					</form>														
+				</div>
+		  	</div>
+          
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar oficina bancaria? </p>  
+		        </div>
+		        <button type="button" class="btn btn-primary" id="SiEliminarBanco" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarBanco" data-bs-dismiss="modal">No</button>
+	        </div>
+
+    	</div>
+  	</div>  
+</div>
+<script>
+	$('#SiEliminarBanco').on('click', function(event) {
+		let formData3 = new FormData();
+		formData3.append('esBDempresas', 0);
+		formData3.append("aut", window.autoBanco);
+		formData3.append("opcionListado", 3);
+		async function eliminaBanco() {
+			const response3 = await fetch('php/banco.php', {
+	      		method: 'POST',
+	      		body: 	formData3,
+	    	});
+			const data3 = await response3.json();
+			return data3;
+		}
+		eliminaBanco().then((data3) => {
+			let eliBanco = eliminarReg('tabBancos', 'autoBanco', 'aut', '');
+			refrescar(1);				
+		}).catch(error => {
+			alert(error.message);
+		});
+	});
+</script>
+
+
+<script>
+	var $table 		= $('#tabBancos');
+	var indiceFila	= -1;
+	var refresco 	= -1;
+	var iPos 		= 0;
+
+	var selectedRow = {};
+
+
+  	$(function() {
+	    $table.on('click-row.bs.table', function (e, row, $element) {
+	    	window.autoBanco 	= row.aut;
+	    	indiceFila			= $element.index();
+	    	iPos				= $table.bootstrapTable('getScrollPosition');
+
+        	let rows 			= Array.from(document.querySelectorAll('tr.success'));
+        	rows.forEach(row => {  row.classList.remove('success');  });    	
+	    	$element.addClass('success');
+
+	    	return false;
+	    })
+
+	    //$table.on('page-change.bs.table', function (number, size) {
+	      //alert($table.bootstrapTable('getOptions').pageNumber);
+	      //alert($table.bootstrapTable('getOptions').pageSize);
+	    //});
+
+	    $table.on('all.bs.table', function (e, name, args) {
+	      //alert(name, args)
+	    })
+
+	    $table.on('sort.bs.table', function (name, order) { 
+	    	refresco 	= -1;
+	    	return false;
+	    })
+
+	    $table.on('search.bs.table', function (text) {
+	    	refresco 	= -1;
+	    	return false;
+	    })
+
+	    $table.on('page-change.bs.table', function () {
+	    	refresco 	= -1;
+	  		return false;
+	    })  	    
+
+	    $table.on('dbl-click-row.bs.table', function (e, row, $element) {   
+	        // gestión ventanas
+	        seleccionarRegistroYcerrar('nExtBancos', row.aut, row.nen);
+	    }) 
+
+	    $table.on('post-body.bs.table', function (data) {
+
+			setTimeout(
+		    function () {
+
+		    	// refresco después de inicio, buscar u ordenar
+		    	if (refresco == -1) {
+					iPos 				= 0;
+					window.autoBanco 	= '';
+					indiceFila			= seleccionarFila('tabBancos', 'autoBanco', 'aut', 'success');
+	    			refresco 			= 0;
+	    			return false;
+		    	}
+
+		    	// refresco después de añadir o eliminar
+		    	if (refresco == 1) {
+		    		indiceFila			= indice(window.autoBanco, 'aut', 'tabBancos');
+					iPos 				= Math.abs(tabBancos.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+		    	}
+
+		    	// refresco regular
+		    	$table.bootstrapTable('scrollTo', iPos);
+		    	refresco = 0;
+		    	return false;
+
+			}, 500);
+
+			return false;
+
+	    })
+
+	    $table.on('refresh.bs.table', function (params) {
+	    })
+
+	})
+
+	window.icons = {
+		detailOpen: 	'bi-caret-down-fill',
+		detailClose: 	'bi-caret-up-fill'
+	}; 	
+
+
+	function rowStyle(row, index) {
+	  let customClass = "";
+	  if (row.aut == window.autoBanco) { customClass = 'success'; }
+	  else {}
+	  return { classes: customClass };
+	}
+
+	function detailFormatter(index, row) {
+		let html = [];
+		$.each(row, function (key, value) {
+			if  (!(!value || value == '')) {
+				let a = '';
+				let b = '';
+				if (key == 'ent')  		{ a = 'Entidad'; 					b = value; }
+				if (key == 'ofi')  		{ a = 'Oficina'; 					b = value; }
+				if (key == 'nen')  		{ a = 'Nombre entidad'; 			b = value; }
+				if (key == 'nof')  		{ a = 'Nombre oficina'; 			b = value; }
+				if (key == 'bic')  		{ a = 'BIC'; 						b = value; }
+				if (key == 'dom')  		{ a = 'Dirección'; 					b = value; }
+				if (key == 'cpo')  		{ a = 'C. P.'; 						b = value; }
+				if (key == 'pob')  		{ a = 'Población'; 					b = value; }
+				if (key == 'pro')  		{ a = 'Provincia'; 					b = value; }
+				if (key == 'pai')  		{ a = 'País'; 						b = value; }
+				if (key == 'per')  		{ a = 'Persona de contacto'; 		b = value; }
+				if (key == 'te1')  		{
+					a = 'Telefóno 1';
+					b = value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul>';
+				}
+				if (key == 'te2')  		{ 
+					a = 'Teléfono 2';
+					b = value + ' <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="tel:' + valorEnlace(value, 1) + '" target="_blank"><i class="bi bi-telephone" style="font-size: 1rem; color: currentColor;"></i> Llamar</a></li><li><a class="dropdown-item" href="https://wa.me/' + valorEnlace(value, 3) + '" target="_blank"><i class="bi bi-whatsapp" style="font-size: 1rem; color: currentColor;"></i> WhatsApp</a></li><li><a class="dropdown-item" href="sms:' + valorEnlace(value, 2) + '" target="_blank"><i class="bi bi-chat-left-text" style="font-size: 1rem; color: currentColor;"></i> SMS</a></li></ul>';
+				}
+				if (key == 'fax')  		{ a = 'Fax'; 									b = value; }
+				if (key == 'cor')  		{
+				 	a = 'E-mail'; 
+					b = value + ' <button type="button" class="btn btn-outline-secondary btn-sm" href="mailto:' + value + '" target="_blank"><i class="bi bi-at" style="font-size: 1rem; color: currentColor;"></i></button>';
+				}
+				if (!(!b || b == '')) {
+						html.push('<div><b>' + a + ':</b> ' + b + '</div><p></p>');		
+				}
+			}
+		})
+		return html.join('');
+	}
+
+  function refrescar(n) {
+    refresco = n;
+    $table.bootstrapTable('refresh');
+    return false;
+  }
+
+</script>
+
+
+  </body>
+</html>

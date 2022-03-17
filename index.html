@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  	<meta charset="utf-8">
+
+  	<link rel="manifest" href="manifest.json">
+  	
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<title>Mis contactos</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+	<script src="libgp01.js"></script>
+
+	<link rel="shortcut icon" href="logo.ico">
+
+</head>
+<body>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function(event) {
+    	var myModal = new bootstrap.Modal(document.getElementById('accesoUsuario'));
+		myModal.show();
+	});
+</script>	
+
+	<div class="container-fluid">
+		<!-- Comienzo modal Acceso usuario -->
+		<div class="modal fade" id="accesoUsuario" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		  	<div class="modal-dialog">
+		      	<div class="modal-content">
+		            
+	            	<!-- Modal Header -->
+		          	<div class="modal-header bg-dark bg-gradient">
+		              	<h5 class="modal-title text-warning">Acceso a <strong>Mis Contactos</strong></h5>
+		              	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="cerrarVentanaPrincipal()"></button>
+		          	</div>       
+		          	<!-- Modal body -->
+		          	<div class="modal-body bg-success bg-opacity-50 bg-gradient">
+		          		<form id="formAcceso">
+
+				    	<div class="input-group mb-3 mt-2">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="bi bi-at" ></i></span>
+							</div>
+							<input type="email" name="cor" id="cor" placeholder="Correo electrónico" maxlength="50" size=50 required class="form-control">
+							<span class="input-group-text" id="checkCor" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>
+						</div>
+
+				    	<div class="input-group mb-3" id="bloqueUsr" style="display: none;">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+							</div>
+							<input type="text" name="usuario" id="usuario" placeholder="Usuario" maxlength="12" size=12 class="form-control">
+							<span class="input-group-text" id="checkUsu" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>	
+						</div>
+
+				    	<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
+							</div>
+							<input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" maxlength="32" required class="form-control">
+						</div> 
+
+						<div class="row justify-content-end" style="display: none;">
+							<div class="col-auto">
+								<a href="#" id="contrasenaOlvidada" class="link-dark" style="text-decoration: none" >Olvidé la contraseña</a>
+							</div>
+						</div>
+
+						<div id="myTextData"></div>
+
+						<div class="row justify-content-start align-items-center gx-2 gy-2 mt-3 mb-4">
+							<div class="col-auto">
+								<button type="submit" class="btn btn-dark" id="Aceptar" value="Aceptar"><i class="bi bi-people-fill" style="font-size: 1.2rem; color: orange;" ></i> Abrir <strong>Mis Contactos</strong></button>
+							</div>
+							<div class="col-auto">
+								<button type="reset"  class="btn btn-sm btn-warning" id="cancelar" value="Cancelar"><i class="bi bi-x-circle-fill" style="font-size: 1rem;"></i>  Cancelar</button>
+							</div>
+						</div>
+
+						</form>
+
+						<div class="row justify-content-end align-items-center gx-3 gy-0">
+							<div class="col-auto">
+								<h6 class="text-dark">¿Eres nuevo? <strong>Es GRATIS para SIEMPRE</strong> <i class="bi bi-emoji-sunglasses" style="font-size: 1.2rem;"></i></h6>
+							</div>
+							<div class="col-auto">
+								<button type="button" class="btn btn-success text-white" id="suscripcion" onclick="window.location.href='ini.html';"><i class="bi bi-person-check-fill" style="font-size: 1rem; color: white;" ></i>&nbsp; Quiero suscribirme</button>
+							</div>
+						</div>
+
+					</div>
+					
+		      	</div>
+			</div>
+
+<script>
+
+	formAcceso.addEventListener ('reset', (e) => { 
+		checkCor.style.display 	= 'none';
+		bloqueUsr.style.display = 'none';
+		checkUsu.style.display 	= 'none';
+		cor.focus();
+	});
+
+   formAcceso.onsubmit = async (e) => {
+        e.preventDefault();
+        if ((window.eMailValido) && (window.numUs == 1)) { 
+                usuario.value = 'admin'; window.ultEmpresaAbierta = 1; 
+        } else if (!window.eMailValido) {
+            modal1("Mis contactos", "Correo electrónico no válido", myTextData);
+            return false;
+        } else if (!window.usuarioValido) {
+            modal1("Mis contactos", "Nombre de usuario no válido", myTextData);
+            return false;
+        }
+        entrada(cor.value, usuario.value, contrasena.value, window.ultEmpresaAbierta, true);
+    };
+
+
+    cor.addEventListener ('blur', (event) => { 
+    	if (cor.value.length == 0) { return false; }
+    	conectar(1, cor.value);
+    }) 
+
+    usuario.addEventListener ('blur', (event) => { 
+    	if (usuario.value.length == 0) { return false; }
+    	conectar(2, usuario.value);
+    })     
+
+    function conectar(tipo, dato) {
+		let formData2 = new FormData();
+		formData2.append('tip', tipo);
+		formData2.append('dat', dato);
+
+        async function datosDevueltos() {
+            const response = await fetch('php/compDatos.php', {
+                method: 'POST',
+                body: 	formData2
+            });
+            const data = await response.json();
+            return data;
+        }
+        datosDevueltos().then((data) => {
+            if (data == 'SinPrefijo') {
+                bloqueUsr.style.display = 'none';
+                checkCor.style.display = 'none';
+                window.eMailValido = false;
+                usuario.required = false; 
+                modal1("Mis contactos", "Correo electrónico no válido", myTextData);
+            } else if (data == 'SinUsuario') {
+                checkUsu.style.display = 'none';
+                window.usuarioValido = false;            	
+                modal1("Mis contactos", "Nombre de usuario no válido", myTextData);
+            } else if (data.toString().substring(0, 4) == 'res1') {
+                window.eMailValido = true;
+                window.numUs = parseInt(data.toString().substring(4));
+                localStorage.setItem('numUsMax', window.numUs);  
+                checkCor.style.display = '';           
+                if (window.numUs > 1) {
+                    bloqueUsr.style.display = '';
+                    usuario.required = true; 
+                    usuario.focus();
+                } else {
+                    bloqueUsr.style.display = 'none'; 
+                    usuario.required = false;
+                }
+			} else if (data.toString().substring(0, 4) == 'res2') {
+				window.usuarioValido = true;
+				window.ultEmpresaAbierta = parseInt(data.toString().substring(4));
+				checkUsu.style.display = '';
+            } else {
+            	if (tipo == 1) {
+                	window.eMailValido = false;
+                	usuario.required = false;
+            	} else {
+            		window.usuarioValido = false;
+            	}
+                modal1("Mis contactos", data, myTextData);
+            }
+        }).catch(error => {
+        	if (tipo == 1) {
+            	window.eMailValido = false;
+            } else {
+            	window.usuarioValido = false;	
+            }
+            modal1("Mis contactos", error.message, myTextData);
+        });
+    }
+
+
+</script>
+
+		</div>
+	</div>	
+</body>
+</html>	

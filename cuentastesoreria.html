@@ -1,0 +1,1022 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Cuentas de tesorería</title>
+
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="lib/icons/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.min.css">
+    <script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+
+    <script src="lib/bootstrap-table/dist/locale/bootstrap-table-es-ES.min.js"></script>
+    
+    <script src="lib/bootstrap-table/dist/tableExport.min.js"></script>
+    <script src="lib/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+
+  	<script src="lib/gp/libgp01.js"></script>
+
+  	<link rel="shortcut icon" href="lib/ico/logo.ico">	
+
+	<style>
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    @media (max-width: 992px) {
+        #titulo { font-size: 18px };
+    }  
+
+    @media (min-width: 993px) {
+        #aceptar:after  { content: '  Guardar';}
+        #cancelar:after { content: '  Cancelar';}
+    }
+
+    @media (min-width: 993px) {
+        #aceptar1:after     { content: '  Guardar';}
+        #cancelar1:after { content: '  Cancelar';}
+    }   
+
+    .success {
+            background: #92c5fc;
+            font-weight: bold;
+    }   
+
+    .success1 {
+            background: #92c5fc;
+            font-weight: bold;
+    }       
+
+    .closed { display: none; }
+    .opened { display: block; }
+
+    .wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .dropdown-menu > li:hover > .submenu{ display: block; margin-left:2rem; } 
+
+
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+	  visibility: hidden; /* Hidden by default. Visible on click */
+	  min-width: 250px; /* Set a default minimum width */
+	  margin-left: -125px; /* Divide value of min-width by 2 */
+	  background-color: #333; /* Black background color */
+	  color: #fff; /* White text color */
+	  text-align: center; /* Centered text */
+	  border-radius: 2px; /* Rounded borders */
+	  padding: 16px; /* Padding */
+	  position: fixed; /* Sit on top of the screen */
+	  z-index: 1; /* Add a z-index if needed */
+	  left: 50%; /* Center the snackbar */
+	  bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+	  visibility: visible; /* Show the snackbar */
+	  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+	  However, delay the fade out process for 2.5 seconds */
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {bottom: 30px; opacity: 1;}
+	  to {bottom: 0; opacity: 0;}
+	}     	
+
+	</style>
+
+	<script>
+
+		function valorCampoRadio(nombre) {
+	    var options = document.getElementsByName(nombre);
+	    if (options) {
+        for (var i = 0; i < options.length; i++) {
+          if (options[i].checked) return options[i].value;
+        }
+	    }
+		}
+
+		function tipoCtaTesFormato(valor) {
+			if (valor == 1) { return 'Caja';  }
+			if (valor == 2) { return 'Banco'; }
+		}	
+
+
+		function revisarPred() {
+			if (prec.value == -1) {
+        var numFilas = Object.keys($('#tabCtasTesoreria').bootstrapTable('getData')).length;
+        if (numFilas != 0)  {
+          for (i = 0; i < numFilas; i++) {
+            if ($('#tabCtasTesoreria').bootstrapTable('getData')[i].cod != cod.value) {
+            	if ($('#tabCtasTesoreria').bootstrapTable('getData')[i].prec == -1) {
+								$('#tabCtasTesoreria').bootstrapTable('updateByUniqueId', {
+	        				id: $('#tabCtasTesoreria').bootstrapTable('getData')[i].cod,
+	        				row: {prec: 0},
+					        replace: false
+								});
+            	}
+            }
+          }
+        }
+			}
+
+			if (prev.value == -1) {
+        var numFilas = Object.keys($('#tabCtasTesoreria').bootstrapTable('getData')).length;
+        if (numFilas != 0)  {
+          for (i = 0; i < numFilas; i++) {
+            if ($('#tabCtasTesoreria').bootstrapTable('getData')[i].cod != cod.value) {
+            	if ($('#tabCtasTesoreria').bootstrapTable('getData')[i].prev == -1) {
+								$('#tabCtasTesoreria').bootstrapTable('updateByUniqueId', {
+	        				id: $('#tabCtasTesoreria').bootstrapTable('getData')[i].cod,
+	        				row: {prev: 0},
+					        replace: false
+								});
+            	}
+            }
+          }
+        }
+			}
+
+		}
+
+		function controlesCtaBancaria(n) {
+			if (n==1) {
+				ent.readOnly		= true;
+				ofi.readOnly		= true;
+				ndc.readOnly		= true;
+				cue.readOnly		= true;
+				iba.readOnly		= true;
+				bic.readOnly		= true;	
+			} else {
+				ent.readOnly		= false;
+				ofi.readOnly		= false;
+				ndc.readOnly		= false;
+				cue.readOnly		= false;
+				iba.readOnly		= false;
+				bic.readOnly		= false;	
+			}
+		}
+
+
+
+	</script>
+
+  </head>
+  <body class="bg-light" onunload="descargar()">
+
+  <script>
+  	var $table = document.getElementById('tabCtasTesoreria');
+
+  	// gestión ventanas. Es la función que se ejecutar en onunload de body
+  	function descargar() { despuesDeCerrarVentana('nExtCtasTesoreria', 'cuentastesoreria'); }	
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+    	compProcedencia();
+    	// gestión ventanas
+    	despuesDeAbrirVentana('nExtCtasTesoreria', 'cuentastesoreria');
+
+			$('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+			permisosVentana('cuentastesoreria');
+
+			cambiarAltoTabla();
+
+			return false;
+
+    });
+
+
+
+	$(document).ready(function(e) {
+		barraPaginacion('#tabCtasTesoreria');
+		if (window.nExtCtasTesoreria != 0) { msjDblClic(); }
+		return false;
+	});	
+
+	window.addEventListener("resize", function(event) {
+		cambiarAltoTabla();
+		return false;
+	});
+
+	//funciona en chrome pero no en firefox
+	window.addEventListener("load", function(event) {
+		//cambiarAltoTabla();
+		return false;
+	});	
+
+
+	function eliminarCtaTesoreria(){	
+		let formDataE = new FormData();
+		formDataE.append("nform", 'ctastesoreria');
+		formDataE.append("codnum", window.idTabCtasTesoreria);
+		formDataE.append("opcionlistado", 3);
+		async function comprobarAntesDeEliminar() {
+			const comprobarResponse = await fetch('php/comprobar_antes_de_editar_o_eliminar.php', {
+	      		method: 'POST',
+	      		body: 	formDataE
+	    	});
+			const dataE = await comprobarResponse.json();
+			return dataE;
+		}
+		comprobarAntesDeEliminar().then((dataE) => {
+			if (dataE == '[object Object]') {
+				let myModal = new bootstrap.Modal(document.getElementById('formEliminarCtaTesoreria'));
+				myModal.show();
+				codE.defaultValue = dataE.cod;
+				desE.defaultValue = dataE.des;
+			} else {
+				document.getElementById('msjCtaTesoreria').innerText = dataE;
+				let myModal = new bootstrap.Modal(document.getElementById('dialogoCtaTesoreria'));
+				myModal.show();
+			};				
+		}).catch(error => {
+			alert(error.message);
+		});
+        return false;
+	}
+
+
+</script>
+
+<div class="wrapper">
+
+
+<div class="container-fluid sticky-top bg-light" id="contenedor">
+  	<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+
+	  	<div class="col-auto d-none d-md-block mt-2 mb-2">
+			 <div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm" id="NuevaCtaTesoreria" title="Nueva cta. tesorería" data-toggle="tooltip" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 1)"><i class="bi bi-person-plus-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EditarCtaTesoreria" title="Editar cta. tesorería" data-toggle="tooltip" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 2)"><i class="bi bi-person-lines-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="EliminarCtaTesoreria" title="Eliminar cta. tesorería" data-toggle="tooltip" onClick="eliminarCtaTesoreria()"><i class="bi bi-person-dash-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm" id="VerCtaTesoreria" title="Ver cta. tesorería" data-toggle="tooltip" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 4)"><i class="bi bi-person-fill" style="font-size: 1.4rem; color: currentColor;"></i></button>
+			</div>
+		</div>
+
+		<div class="col-auto align-self-center d-none d-lg-block mt-2 mb-2">
+			<a class="navbar-brand" style="font-weight:bold;" id="titulo">Cuentas de tesorería</a>
+		</div>
+
+		<div class="col-auto d-sm-block d-md-none mt-2 mb-2">
+			<button class="btn btn-success dropdown-toggle" type="button" id="MenuMovil" data-bs-toggle="dropdown" aria-expanded="false">
+			<i class="bi bi-list" style="font-size: 1rem; color: currentColor;"></i> </button>
+		  	<ul class="dropdown-menu" aria-labelledby="MenuMovil">
+
+				<li><a class="dropdown-item" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 1)" href="#"><i class="bi bi-person-plus-fill" style="font-size: 1rem; color: currentColor;"></i> Nueva cta. tesorería</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 2)" href="#"><i class="bi bi-person-lines-fill" style="font-size: 1rem; color: currentColor;"></i> Editar cta. tesorería</a></li>
+				<li><a class=" dropdown-item" onClick="eliminarCtaTesoreria()" href="#"><i class="bi bi-person-dash-fill" style="font-size: 1rem; color: currentColor;"></i> Eliminar cta. tesorería</a></li>
+				<li><a class="dropdown-item" onClick="regTabla('modalCtaTesoreria', 'opcionCtaTesoreria', 4)" href="#"><i class="bi bi-person-fill" style="font-size: 1rem; color: currentColor;"></i> Ver cta. tesorería</a></li>		
+
+				<li><hr class="dropdown-divider"></li>
+
+				<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesTablaSubmenu"><i class="bi bi-table" style="font-size: 1rem; color: currentColor;"></i> Tabla </a>
+				  <ul class="submenu dropdown-menu" aria-labelledby="opcionesTablaSubmenu" id="opcion1">
+
+		  			<li><a class="dropdown-item" onClick="valorTarjeta('tabCtasTesoreria')" href="#"><i class="bi bi-card-list" style="font-size: 1rem; color: currentColor;"></i> Tarjeta/Tabla</a></li>
+
+						<li><a class="dropdown-item" href="#" onClick="mostrarColumnas('modalColumnasTablasCtasTesoreria', 0)"><i class="bi bi-layout-three-columns" style="font-size: 1rem; color: currentColor;"></i> Mostrar columnas</a></li>		  			
+
+				  	<li><a class="dropdown-item" href="#" onClick="imprimirTabla('Cuentas de tesorería', tabCtasTesoreria)"><i class="bi bi-printer" style="font-size: 1rem; color: currentColor;"></i> Imprimir</a></li>
+
+				  	<li class="dropend"><a class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" href="#" id="opcionesExportarSubmenu"><i class="bi-file-earmark-arrow-down" style="font-size: 1rem; color: currentColor;"></i> Exportar a </a>
+				  	 	<ul class="submenu submenu1 dropdown-menu" aria-labelledby="opcionesExportarSubmenu">
+							<li><a class="dropdown-item" onClick="exportarTabla('excel','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">MS-Excel</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('csv','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">CSV</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('txt','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">TXT</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('json','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">JSON</a></li>
+							<li><a class="dropdown-item" onClick="exportarTabla('sql','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">SQL</a></li>
+				  	 	</ul>
+				  	</li>
+				 </ul>
+			</li>
+		</ul>
+	</div>	
+
+
+		<div class="col-auto mt-2 mb-2">
+
+			<div class="btn-group" role="group">
+				<div class="form-check form-switch btn-sm d-none d-md-block">
+					<input class="form-check-input" type="checkbox" id="vistaTarjeta" title="Vista de tarjeta" data-toggle="tooltip" onchange="valorTarjeta('tabCtasTesoreria')">
+					<label class="form-check-label" for="vistaTarjeta"></label>
+				</div>		
+			</div>
+
+			<div class="btn-group" role="group">
+				<button class="btn btn-success btn-sm d-none d-md-block" id="columnasCtasTesoreria" title="Mostrar columnas" data-toggle="tooltip" onClick="mostrarColumnas('modalColumnasTablasCtasTesoreria', 0)"><i class="bi-layout-three-columns" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm d-none d-md-block" id="imprimirCtasTesoreria" title="Imprimir tabla" data-toggle="tooltip" onClick="imprimirTabla('Cuentas de tesorería', tabCtasTesoreria)"><i class="bi bi-printer" style="font-size: 1.4rem; color: currentColor;"></i></button>
+				<button class="btn btn-success btn-sm dropdown-toggle d-none d-md-block" type="button" id="exportarCtasTesoreria" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar tabla">
+				<i class="bi-file-earmark-arrow-down" style="font-size: 1.4rem; color: currentColor;"></i>
+				</button>
+			  	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+			  		<li><h5 class="dropdown-header">Exportar a:</h5></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('excel','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">MS-Excel</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('csv','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">CSV</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('txt','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">TXT</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('json','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">JSON</a></li>
+					<li><a class="dropdown-item" onClick="exportarTabla('sql','Cuentas de tesorería','Tabla de Cuentas de tesorería',100, 'tabCtasTesoreria')" href="#">SQL</a></li>
+			  	</ul>
+			</div>
+		</div>
+		<div class="col-auto align-self-center mt-2 mb-2">
+			<div class="btn-group" role="group">
+		  		<input type="search" id="buscar" class="form-control" placeholder="Buscar" onchange="buscarAhora('tabCtasTesoreria','buscar')" title="Buscar en la tabla" data-toggle="tooltip">
+		  	</div>
+		</div>
+		<div class="col-auto mt-2 mb-2">
+		  	<div class="btn-group" role="group">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Cerrar" onclick="cerrarVentana('nExtCtasTesoreria')" data-toggle="tooltip"></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+    opcionesTablaSubmenu.addEventListener('click',  (e) => { 
+        e.stopPropagation();
+    });
+
+    opcionesExportarSubmenu.addEventListener('click',   (e) => { 
+        e.stopPropagation();
+    });
+
+</script>
+
+<div id="snackbar">Doble clic para seleccionar cta. tesorería</div>
+
+<div class="container-fluid">
+    <table class="table table-striped table-hover table-responsive" data-page-number="1" id="tabCtasTesoreria" data-url="./php/datosTabla.php?vista=cuentastesoreria" data-method="post" data-locale="es-sp" data-toggle="table" data-id-field="cod" data-undefined-text=""
+
+    data-unique-id="cod"
+
+    data-search="true"
+    data-show-search-button="false"
+    data-search-selector="#buscar"
+    data-search-highlight="true"
+    data-search-on-enter-key="false"
+
+    data-side-pagination="client"
+    data-pagination="false"
+    data-show-pagination-switch="false"
+
+    data-id-table="tabCtasTesoreria"
+
+    data-click-to-select="true"
+    data-single-select="true"
+
+    data-sort-name="cod"
+    data-sort-order="asc"
+
+    data-virtual-scroll="false"
+
+  	data-icons-prefix="bi"
+  	data-icons="icons"
+
+    data-auto-refresh="true"
+    data-auto-refresh-interval="60"
+    data-show-refresh="false"
+    data-show-auto-refresh="false"
+    data-auto-refresh-silent="true"   
+
+    data-export-data-type="all"
+
+    data-detail-view="true"
+    data-detail-formatter="detailFormatter"
+    data-row-style="rowStyle"
+
+    data-cache="false"
+
+    >
+
+    
+    <thead class="bg-dark text-light">
+     <tr>
+     	<th data-field="cod"	data-sortable="true" data-click-to-select="true" data-switchable="false">Código</th>
+			<th data-field="des" 	data-sortable="true" data-click-to-select="true" data-switchable="false">Descripción</th>
+			<th data-field="tip" 	data-sortable="true" data-click-to-select="true" data-formatter="tipFormato">Tipo</th>
+			<th data-field="sub" 	data-sortable="true" data-click-to-select="true" data-visible="false">Subcuenta</th>
+			<th data-field="prec" data-sortable="true" data-click-to-select="true" data-formatter="precFormato" data-align="center">Por defecto compras</th>
+			<th data-field="prev" data-sortable="true" data-click-to-select="true" data-formatter="prevFormato" data-align="center">Por defecto ventas</th>
+		</tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+
+<!-- Comienzo modal form cta. tesorería -->
+<div class="modal fade" id="modalCtaTesoreria" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-xl">
+      	<div class="modal-content">
+	        <!-- Modal Header -->
+	      	<div class="modal-header bg-dark bg-gradient sticky-top">
+	        	<div class="col-6">
+	            <a class="navbar-brand text-warning" id="exampleModalLabel">Cuenta de tesorería</a>
+	          </div>
+						<div class="col-auto" style="text-align:right;">
+							<form id="formCtaTesoreria">
+							<button type="submit" class="btn btn-success mr-3 text-white" id="aceptar" value="Aceptar" title="Guardar cambios" data-toggle="tooltip"><i class="bi bi-check-circle" style="font-size: 1rem; color: white;" ></i> </button>
+							<button type="reset" class="btn btn-warning btn-sm" id="cancelar" value="Cancelar" title="Cancelar cambios" data-toggle="tooltip"><i class="bi bi-x-circle" style="font-size: 1rem;"></i> </button>	
+						</div>
+						<div class="col-1" style="text-align:right;">
+			        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana">
+			        </button>
+			      </div>
+					</div>
+
+          	<!-- Modal body -->
+          	<div class="modal-body bg-primary bg-opacity-25">
+		        <div class="container-fluid">
+					<div class="row align-items-end gx-3 gy-3 mb-3">
+
+						<div class="col-auto">
+							<input type="text" name="cod" id="cod" value="" placeholder="Código" maxlength=5 size=5  required class="form-control" title="Código de la cuenta de tesorería. Máximo 5 caracteres" data-toggle="tooltip">	
+						</div>					
+						<div class="col-auto">
+							<input type="text" name="des" id="des" value="" placeholder="Descripción" maxlength=40 size=40 required class="form-control" title="Descripción de la cuenta de tesorería. Máximo 40 caracteres" data-toggle="tooltip">
+						</div>
+						<div class="col-auto">
+							<label for="subcuenta">Subcuenta</label>
+							<input type="text" name="sub" id="sub" placeholder="Subcuenta" maxlength="12" size=12 class="form-control" title="Subcuenta contable" data-toggle="tooltip">
+						</div>
+					</div>
+
+					<div class="row align-items-center gx-3 gy-3 mb-3">
+						<div class="col-auto">
+							<div class="form-check form-switch">
+							  	<label class="form-check-label">
+							    	<input type="checkbox" name="prec" id="prec" class="form-check-input" data-toggle="tooltip" title="Por defecto en Compras" value=0>Por defecto Compras</label>
+							</div>
+						</div>
+
+						<div class="col-auto">
+							<div class="form-check form-switch">
+							  	<label class="form-check-label">
+							    	<input type="checkbox" name="prev" id="prev" class="form-check-input" data-toggle="tooltip" title="Por defecto en Ventas" value=0>Por defecto Ventas</label>
+							</div>
+						</div>
+
+	    			<div class="col-auto">
+		    			<label class="radio-inline control-label">Tipo</label>
+							<input type="radio" class="btn-check" name="tip" id="tip1" value=1>
+							<label class="btn btn-outline-primary" for="tip1" autocomplete="off">Caja</label>
+							<input type="radio" class="btn-check" name="tip" id="tip2" value=2>
+							<label class="btn btn-outline-primary" for="tip2" autocomplete="off">Banco</label>
+	    			</div>
+
+					</div>
+
+
+    			<div class="row g-1 mb-3">
+						<div class="col-auto">
+  						<label for="ent">Entidad</label>
+							<input type="text" name="ent" id="ent" maxlength=4 size=4 required class="form-control" title="Entidad" data-toggle="tooltip">
+          	</div>
+          	<div class="col-auto">
+							<label for="ofi">Oficina</label>
+              <input type="text" name="ofi" id="ofi" maxlength=4 size=4 required class="form-control" title="Oficina" data-toggle="tooltip">
+            </div>
+            <div class="col-auto">
+              <label for="ndc">D. C.</label>
+              <input type="text" name="ndc" id="ndc" maxlength=2 size=2 required class="form-control" title="Dígitos de control" data-toggle="tooltip">
+            </div>
+            <div class="col-auto">
+              <label for="cue">Nº de cuenta</label>
+              <input type="text" name="cue" id="cue" maxlength=10 size=10 required class="form-control" title="Número de cuenta" data-toggle="tooltip">
+            </div>
+          </div>
+        	<div class="row g-1 mb-3">
+            <div class="col-auto">
+                <label for="iban">IBAN</label>
+                <input type="text" name="iba" id="iba" maxlength="4" size=4 title="IBAN" class="form-control" style="text-align:center" data-toggle="tooltip">
+            </div>
+            <div class="col-auto">
+              <label for="bic">BIC</label>
+              <input type="text" name="bic" id="bic" maxlength="8" size=8 title="BIC" class="form-control" style="text-align:center" data-toggle="tooltip">
+            </div>
+            <div class="col-auto">
+            	<label for="nombreBanco">Banco</label>
+							<input type="text" name="nom" id="nom" size=40 readonly class="form-control" title="Nombre del banco" data-toggle="tooltip">
+						</div>
+          </div>
+							
+				</div>
+				</form>	
+			</div>
+		
+		</div>
+	</div>
+</div>
+
+<script>
+	tip1.addEventListener('click', (event) => {
+		sub.value = '5700000';
+		controlesCtaBancaria(1);
+	});
+
+	tip2.addEventListener('click', (event) => {
+		sub.value = '5720000';
+		controlesCtaBancaria(2);
+	});	
+
+	prec.addEventListener('click', (event) => {
+		if (prec.defaultChecked) {
+			event.preventDefault ();
+		} else {
+			if (prec.checked) {
+				prec.value = -1;
+			} else {
+				prec.value = 0;
+			}
+		}
+	});
+
+	prev.addEventListener('click', (event) => {
+		if (prev.defaultChecked) {
+			event.preventDefault ();
+		} else {
+			if (prev.checked) {
+				prev.value = -1;
+			} else {
+				prev.value = 0;
+			}
+		}		
+	});
+
+	cod.addEventListener('blur', (event) => {
+    if (window.opcionCtaTesoreria === 1) {
+      window.idTabCtasTesoreria = cod.value;
+    }   
+  });
+
+	ent.addEventListener('blur', (event) => {
+		ent.value = cadenaCeros(ent.value, 4);
+	});
+
+	ofi.addEventListener('blur', (event) => {
+		ofi.value = cadenaCeros(ofi.value, 4);
+	});
+
+	ndc.addEventListener('blur', (event) => {
+		ndc.value = cadenaCeros(ndc.value, 2);
+	});
+
+	cue.addEventListener('blur', (event) => {
+		cue.value = cadenaCeros(cue.value, 10);
+	});
+			
+	modalCtaTesoreria.addEventListener('show.bs.modal', function (e) {	
+		if (window.opcionCtaTesoreria === 1) {
+			cod.defaultValue 		= '';
+			des.defaultValue 		= '';
+			seleccionarRadio('tip', '1');
+			window.valorTipAlCancelar = 1;
+			sub.defaultValue 		= '5700000';
+			ent.defaultValue		= '0000';
+			ofi.defaultValue		= '0000';
+			ndc.defaultValue		= '00';
+			cue.defaultValue		= '0000000000';
+			iba.defaultValue		= '';
+			bic.defaultValue		= '';
+			nom.defaultValue		= '';
+
+			prec.defaultValue 	= 0;
+			prec.defaultChecked	= false;
+
+			prev.defaultValue 	= 0;
+			prev.defaultChecked	= false;
+
+			cod.readOnly 				= false;
+			des.readOnly 				= false;
+			sub.readOnly 				= false;
+			controlesCtaBancaria(1);
+			prec.disabled 			= false;
+			prev.disabled 			= false;
+			tip1.disabled				= false;
+			tip2.disabled				= false;
+
+			aceptar.hidden 			= false;
+      cancelar.hidden 		= false;
+		}
+
+		if (window.opcionCtaTesoreria === 2 || window.opcionCtaTesoreria === 4) {
+
+			let queries2 = "SELECT `COD` AS `cod`, `DESCRIPCION` AS `des`, `TIPO` AS `tip`, `SUBCUENTA` AS `sub`, LPAD(`N_ENTIDAD`, 4, 0) AS `ent`, LPAD(`N_OFICINA`, 4, 0) AS `ofi`, LPAD(`N_DC`, 2, 0) AS `ndc`, LPAD(CAST(`N_CUENTA` AS DECIMAL(10,0)), 10, 0) AS `cue`,`IBAN` AS `iba`, `BIC` AS `bic`, `PRED_COMPRAS` AS `prec`, `PRED_VENTAS` AS `prev` from `ctas_tesoreria` where `COD` = '" + window.idTabCtasTesoreria + "';";
+			let formData2 = new FormData();
+			formData2.append('queries', queries2);
+			formData2.append('esBDempresas', 0);
+			async function datosDevueltos2() {
+				const response2 = await fetch('php/multiselect.php', {
+		      		method: 'POST',
+		      		body: formData2
+		    	});
+				const data = await response2.json();
+				return data;
+			};
+			datosDevueltos2().then((data) => {
+				cod.defaultValue 		= window.idTabCtasTesoreria;
+				des.defaultValue 		= data[0].des;
+				seleccionarRadio('tip', data[0].tip);
+				window.valorTipAlCancelar = data[0].tip;
+				sub.defaultValue		= data[0].sub || '';
+				ent.defaultValue		= data[0].ent;
+				ofi.defaultValue		= data[0].ofi;
+				ndc.defaultValue		= data[0].ndc;
+				cue.defaultValue		= data[0].cue;
+				iba.defaultValue		= data[0].iba || '';
+				bic.defaultValue		= data[0].bic || '';
+				prec.defaultValue 	= data[0].prec;
+				prev.defaultValue 	= data[0].prev;
+				nom.defaultValue		= '';
+
+				if (data[0].prec == 0) { prec.defaultChecked = false; } else { prec.defaultChecked = true; }
+				if (data[0].prev == 0) { prev.defaultChecked = false; } else { prev.defaultChecked = true; }
+
+				if (window.opcionCtaTesoreria === 2) {
+						cod.readOnly 		= true;
+						des.readOnly 		= false;
+						sub.readOnly		= false;
+						controlesCtaBancaria(data[0].tip);
+
+						prec.disabled 	= false;
+						prev.disabled 	= false;
+						tip1.disabled		= false;
+						tip2.disabled		= false;
+						aceptar.hidden 	= false;
+      			cancelar.hidden = false;
+				}		
+
+				if (window.opcionCtaTesoreria === 4) {
+						cod.readOnly 		= true;
+						des.readOnly 		= true;
+						sub.readOnly		= true;
+						ent.readOnly		= true;
+						ofi.readOnly		= true;
+						ndc.readOnly		= true;
+						cue.readOnly		= true;
+						iba.readOnly		= true;
+						bic.readOnly		= true;
+						prec.disabled 	= true;
+						prev.disabled 	= true;
+						tip1.disabled		= true;
+						tip2.disabled		= true;
+						aceptar.hidden 	= true;
+      			cancelar.hidden = true;
+				}
+
+			})
+		}
+
+		document.getElementById('formCtaTesoreria').reset();
+	})
+
+	formCtaTesoreria.onreset = async (e) => {
+		controlesCtaBancaria(window.valorTipAlCancelar);
+	}
+
+	formCtaTesoreria.onsubmit = async (e) => {
+		e.preventDefault();
+		ent.value   		= parseInt(ent.value);
+		ofi.value   		= parseInt(ofi.value);
+		ndc.value   		= parseInt(ndc.value);
+		cue.value   		= parseInt(cue.value);		
+		var valorTip = valorCampoRadio('tip');
+  	var fila2 = {
+   		cod: cod.value,
+      des: des.value,
+      tip: valorTip,
+      sub: sub.value,
+      ent: ent.value,
+      ofi: ofi.value,
+      ndc: ndc.value,
+      cue: cue.value,
+      iba: iba.value,
+      bic: bic.value,
+      prec: prec.value,
+      prev: prev.value
+    };
+
+       	//$('#tabCtasTesoreria').bootstrapTable('scrollTo', 'bottom')
+    	//$('#tabCtasTesoreria').bootstrapTable('scrollTo', {unit: 'rows', value: index})
+		async function datosDevueltos1() {
+			let formData1 = new FormData(formCtaTesoreria);
+			formData1.append('esBDempresas', 0);
+			formData1.append('opcionListado', window.opcionCtaTesoreria);
+			formData1.append('prec', prec.value);
+			formData1.append('prev', prev.value);
+      const response1 = await fetch('php/cuentatesoreria.php', {
+        method: 'POST',
+        body:   formData1
+      });
+      const data1 = await response1.json();
+      return data1;
+		}
+
+    datosDevueltos1().then((data1) => {
+    	if (data1.toString().substring(0, 4) == 'codN') {
+  			fila2.cod = data1.toString().substring(4);
+				$('#tabCtasTesoreria').bootstrapTable('append', fila2);
+				window.idTabCtasTesoreria = data1.toString().substring(4);
+				$('#modalCtaTesoreria').modal('hide');			
+				if (prec.value == -1 || prev.value == -1) {revisarPred();} 
+    	} else if (data1 == '0') {
+				$('#tabCtasTesoreria').bootstrapTable('updateByUniqueId', {
+  				id: window.idTabCtasTesoreria,
+  				row: fila2,
+	        replace: false
+				});
+				$('#modalCtaTesoreria').modal('hide');
+				if (prec.value == -1 || prev.value == -1) {revisarPred();}
+      } else if (data1 == '1') {
+    		cod.focus();
+        msjCtaTesoreria.innerHTML = 'Código de cta. de tesorería ya existente';
+        let myModalNuevo1 = new bootstrap.Modal(dialogoCtaTesoreria);
+        myModalNuevo1.show();                           
+      } else if (data1 == '2') {
+    		des.focus();
+        msjCtaTesoreria.innerHTML = 'Descripción de cta. de tesorería ya existente';
+        let myModalNuevo2 = new bootstrap.Modal(dialogoCtaTesoreria);
+        myModalNuevo2.show();
+      } else {
+        msjCtaTesoreria.innerHTML=data1;
+        let myModalNuevo3 = new bootstrap.Modal(dialogoCtaTesoreria);
+        myModalNuevo3.show();
+      }
+    }).catch(error => {
+			alert(error.message);
+    })			
+	    
+	}
+
+</script>
+
+
+<!-- Comienzo modal mensajes -->
+<div class="modal" id="dialogoCtaTesoreria" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-light">
+              <h5 class="modal-title">GestiónPYME</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          </div>       
+          <!-- Modal body -->
+          <div class="modal-body">
+			<div align="center">
+			    <p id="msjCtaTesoreria">No se puede eliminar la cta. de tesorería por defecto</p>  
+			</div>
+          </div>
+    </div>
+  </div>  
+</div>
+
+
+<!-- Comienzo modal columnas visibles -->
+<div class="modal fade modal-dialog-scrollable" id="modalColumnasTablasCtasTesoreria" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title">Columnas a mostrar</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+            	<form>
+            		<div class="form-group" id="listFields">
+                	</div>
+            	</form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+		modalColumnasTablasCtasTesoreria.addEventListener('show.bs.modal', function (e) {
+				crearListadoNombresColumnas('modalColumnasTablasCtasTesoreria');
+		})
+</script>
+
+
+<!-- Comienzo modal eliminar -->
+<div class="modal fade" id="formEliminarCtaTesoreria" tabindex="-1">
+  	<div class="modal-dialog">
+      	<div class="modal-content">
+      	  	
+          	<!-- Modal Header -->
+          	<div class="modal-header bg-light">
+              	<h5 class="modal-title">Cuenta de tesorería</h5>
+          		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="Cerrar ventana"></button>
+          	</div>       
+          	<!-- Modal body -->
+          	<div class="modal-body">
+	        	<div class="container-fluid">
+	        		<form id="formDel">
+						<div class="row gx-3 gy-3">
+							<div class="col-auto">
+								<input type="text" name="codE" id="codE" size=5 readonly class="form-control" data-toggle="tooltip" title="Código de cta. de tesorería">
+							</div>					
+							<div class="col-auto">
+								<input type="text" name="desE" id="desE" size=40 readonly class="form-control" data-toggle="tooltip" title="Descripción de la cta. de tesorería">
+							</div>
+						</div>
+					</form>														
+				</div>
+		  	</div>
+          
+			<!-- Modal footer -->
+			<div class="modal-footer bg-light">
+		        <div align="center">
+		            <p>¿Eliminar cuenta? </p>  
+		        </div>
+		        <button type="button" class="btn btn-primary" id="SiEliminarCtaTesoreria" data-bs-dismiss="modal">Sí</button>
+		        <button type="button" class="btn btn-secondary" id="NoEliminarCtaTesoreria" data-bs-dismiss="modal">No</button>
+	        </div>
+
+    	</div>
+  	</div>  
+</div>
+<script>
+	  $('#SiEliminarCtaTesoreria').on('click', function(event) {
+				let formData3 = new FormData();
+				formData3.append('esBDempresas', 0);
+				formData3.append("cod", window.idTabCtasTesoreria);
+				formData3.append("opcionListado", 3);
+				async function eliminaCtaTesoreria() {
+					const response3 = await fetch('php/cuentatesoreria.php', {
+			      		method: 'POST',
+			      		body: 	formData3,
+			    	});
+					const data3 = await response3.json();
+					return data3;
+				}
+				eliminaCtaTesoreria().then((data3) => {
+						let eliCtaTesoreria = eliminarReg('tabCtasTesoreria', 'idTabCtasTesoreria', 'cod', '');	
+				}).catch(error => {
+						alert(error.message);
+				});
+	  });
+</script>
+
+
+<script>
+	
+	var $table 			=  $('#tabCtasTesoreria');
+	var numTab 			=  0;
+	var indiceFila	= -1;
+	var refresco 		= -1;
+	var iPos 				=  0;
+
+	$(function() {
+    $table.on('click-row.bs.table', function (e, row, $element) {
+    	window.idTabCtasTesoreria = row.cod;
+    	indiceFila								= $element.index();
+    	iPos											= $table.bootstrapTable('getScrollPosition');
+			$('.success').removeClass('success');
+    	$element.addClass('success');
+    	return false;				
+    })
+
+		$table.on('dbl-click-row.bs.table', function (e, row, $element) {	
+			// gestión ventanas
+			seleccionarRegistroYcerrar('nExtCtasTesoreria', row.cod, row.des);
+		})	    
+
+    $table.on('sort.bs.table',   function () {
+    	refresco 	= -1;
+  		return false;
+    })
+
+    $table.on('search.bs.table', function () {
+    	refresco 	= -1;
+  		return false;
+    }) 
+
+    $table.on('post-body.bs.table', function (data) {
+				setTimeout(
+			    function () {
+
+			    	// refresco después de inicio, buscar u ordenar
+			    	if (refresco == -1) {
+							iPos 										= 0;
+							window.idTabCtasTesoreria 	= '';
+							indiceFila							= seleccionarFila('tabCtasTesoreria', 'idTabCtasTesoreria', 'cod', 'success');
+		    			refresco 								= 0;
+		    			return false;
+			    	}
+
+			    	// refresco después de añadir o eliminar
+			    	if (refresco == 1) {
+			    		indiceFila							= indice(window.idTabCtasTesoreria, 'cod', 'tabCtasTesoreria');
+							iPos 										= Math.abs(tabCtasTesoreria.getElementsByTagName('tr')[indiceFila].offsetTop) - 5;
+			    	}
+
+			    	// refresco regular
+			    	$table.bootstrapTable('scrollTo', iPos);
+			    	refresco = 0;
+			    	return false;
+
+				}, 500);
+		})	    
+
+	})
+
+	window.icons = {
+		detailOpen: 'bi-caret-down-fill',
+		detailClose: 'bi-caret-up-fill'
+	}; 	
+
+	function rowStyle(row) {
+	  let customClass = "";
+	  if (row.cod == window.idTabCtasTesoreria) { customClass = 'success'; }
+	  else {}
+	  return { classes: customClass };
+	}
+
+
+	function detailFormatter(index, row) {
+		let html = [];
+		$.each(row, function (key, value) {
+				if  (!(!value || value == '')) {
+						let a = '';
+						let b = '';
+						if (key == 'cod')  { a = 'Código'; 							b = value; }
+						if (key == 'des')  { a = 'Descripción'; 				b = value; }
+						if (key == 'tip')  { a = 'Tipo'; 								b = tipFormato(value); }
+						if (key == 'sub')  { a = 'Subcuenta'; 					b = value; }
+						if (key == 'prec') { a = 'Por defecto compras'; b = formatoBool(value, true); }
+						if (key == 'prev') { a = 'Por defecto ventas'; 	b = formatoBool(value, true); }
+						if (!(!b || b == '')) {
+								html.push('<p><b>' + a + ':</b> ' + b + '</p>');		
+						}
+				}
+		})
+		return html.join('');
+	}
+
+  function refrescar(n) {
+    refresco = n;
+    $table.bootstrapTable('refresh');
+    return false;
+  }	
+
+	function precFormato(value, row) {
+			return formatoBool(value, true);
+	}			
+
+	function prevFormato(value, row) {
+			return formatoBool(value, true);
+	}		
+
+	function tipFormato(value, row) {
+		return tipoCtaTesFormato(value);
+	}
+
+</script>
+
+
+  </body>
+</html>
