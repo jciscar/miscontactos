@@ -9,17 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tharunShiv/stick-it-notes.git"
+    "url": "https://github.com/jciscar/miscontactos.git"
   },
   "author": {
     "name": "GestionPYME",
     "email": "info@miscontactos.es",
     "url": "https://miscontactos.es"
   },
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/tharunShiv/stick-it-notes/issues"
-  },
+  "license": "MIT",
   "homepage": "https://miscontactos.es/",
   "dependencies": {
     "semver": "^7.3.5",
