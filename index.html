@@ -29,76 +29,68 @@
 	});
 </script>	
 
+	<div class="container-fluid sticky-top bg-light" id="contenedor">
+		<div class="row justify-content-between align-content-center gx-0 gy-2" id="fila">
+          	<h5 class="modal-title text-warning">Acceso a <strong>Mis Contactos</strong></h5>
+          	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="cerrarVentanaPrincipal()"></button>
+		</div>
+	</div>
 	<div class="container-fluid">
-		<!-- Comienzo modal Acceso usuario -->
-		<div class="modal fade" id="accesoUsuario" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-		  	<div class="modal-dialog">
-		      	<div class="modal-content">
-		            
-	            	<!-- Modal Header -->
-		          	<div class="modal-header bg-dark bg-gradient">
-		              	<h5 class="modal-title text-warning">Acceso a <strong>Mis Contactos</strong></h5>
-		              	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="cerrarVentanaPrincipal()"></button>
-		          	</div>       
-		          	<!-- Modal body -->
-		          	<div class="modal-body bg-success bg-opacity-50 bg-gradient">
-		          		<form id="formAcceso">
 
-				    	<div class="input-group mb-3 mt-2">
-							<div class="input-group-prepend">
-								<span class="input-group-text"><i class="bi bi-at" ></i></span>
-							</div>
-							<input type="email" name="cor" id="cor" placeholder="Correo electrónico" maxlength="50" size=50 required class="form-control">
-							<span class="input-group-text" id="checkCor" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>
-						</div>
 
-				    	<div class="input-group mb-3" id="bloqueUsr" style="display: none;">
-							<div class="input-group-prepend">
-								<span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-							</div>
-							<input type="text" name="usuario" id="usuario" placeholder="Usuario" maxlength="12" size=12 class="form-control">
-							<span class="input-group-text" id="checkUsu" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>	
-						</div>
+  		<form id="formAcceso">
 
-				    	<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
-							</div>
-							<input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" maxlength="32" required class="form-control">
-						</div> 
-
-						<div class="row justify-content-end" style="display: none;">
-							<div class="col-auto">
-								<a href="#" id="contrasenaOlvidada" class="link-dark" style="text-decoration: none" >Olvidé la contraseña</a>
-							</div>
-						</div>
-
-						<div id="myTextData"></div>
-
-						<div class="row justify-content-start align-items-center gx-2 gy-2 mt-3 mb-4">
-							<div class="col-auto">
-								<button type="submit" class="btn btn-dark" id="Aceptar" value="Aceptar"><i class="bi bi-people-fill" style="font-size: 1.2rem; color: orange;" ></i> Abrir <strong>Mis Contactos</strong></button>
-							</div>
-							<div class="col-auto">
-								<button type="reset"  class="btn btn-sm btn-warning" id="cancelar" value="Cancelar"><i class="bi bi-x-circle-fill" style="font-size: 1rem;"></i>  Cancelar</button>
-							</div>
-						</div>
-
-						</form>
-
-						<div class="row justify-content-end align-items-center gx-3 gy-0">
-							<div class="col-auto">
-								<h6 class="text-dark">¿Eres nuevo? <strong>Es GRATIS para SIEMPRE</strong> <i class="bi bi-emoji-sunglasses" style="font-size: 1.2rem;"></i></h6>
-							</div>
-							<div class="col-auto">
-								<button type="button" class="btn btn-success text-white" id="suscripcion" onclick="window.location.href='ini.html';"><i class="bi bi-person-check-fill" style="font-size: 1rem; color: white;" ></i>&nbsp; Quiero suscribirme</button>
-							</div>
-						</div>
-
-					</div>
-					
-		      	</div>
+    	<div class="input-group mb-3 mt-2">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="bi bi-at" ></i></span>
 			</div>
+			<input type="email" name="cor" id="cor" placeholder="Correo electrónico" maxlength="50" size=50 required class="form-control">
+			<span class="input-group-text" id="checkCor" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>
+		</div>
+
+    	<div class="input-group mb-3" id="bloqueUsr" style="display: none;">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+			</div>
+			<input type="text" name="usuario" id="usuario" placeholder="Usuario" maxlength="12" size=12 class="form-control">
+			<span class="input-group-text" id="checkUsu" style="display: none;"><i class="bi-check-lg" style="color: green;"></i></span>	
+		</div>
+
+    	<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="bi bi-unlock-fill"></i></span>
+			</div>
+			<input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" maxlength="32" required class="form-control">
+		</div> 
+
+		<div class="row justify-content-end" style="display: none;">
+			<div class="col-auto">
+				<a href="#" id="contrasenaOlvidada" class="link-dark" style="text-decoration: none" >Olvidé la contraseña</a>
+			</div>
+		</div>
+
+		<div id="myTextData"></div>
+
+		<div class="row justify-content-start align-items-center gx-2 gy-2 mt-3 mb-4">
+			<div class="col-auto">
+				<button type="submit" class="btn btn-dark" id="Aceptar" value="Aceptar"><i class="bi bi-people-fill" style="font-size: 1.2rem; color: orange;" ></i> Abrir <strong>Mis Contactos</strong></button>
+			</div>
+			<div class="col-auto">
+				<button type="reset"  class="btn btn-sm btn-warning" id="cancelar" value="Cancelar"><i class="bi bi-x-circle-fill" style="font-size: 1rem;"></i>  Cancelar</button>
+			</div>
+		</div>
+
+		</form>
+
+		<div class="row justify-content-end align-items-center gx-3 gy-0">
+			<div class="col-auto">
+				<h6 class="text-dark">¿Eres nuevo? <strong>Es GRATIS para SIEMPRE</strong> <i class="bi bi-emoji-sunglasses" style="font-size: 1.2rem;"></i></h6>
+			</div>
+			<div class="col-auto">
+				<button type="button" class="btn btn-success text-white" id="suscripcion" onclick="window.location.href='ini.html';"><i class="bi bi-person-check-fill" style="font-size: 1rem; color: white;" ></i>&nbsp; Quiero suscribirme</button>
+			</div>
+		</div>
+
 
 <script>
 
@@ -197,7 +189,8 @@
 
 </script>
 
-		</div>
-	</div>	
+
+
+
+	</div>
 </body>
-</html>	
