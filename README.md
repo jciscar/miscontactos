@@ -1,2 +1,11 @@
-# miscontactos
-Gestiona tus contactos Localiza a tu cliente para llamarle, enviarle un e-mail, whatsapp o sms. Muy completo: Contacta fácilmente con los diversos departamentos y personal del cliente (gerente, administrativo, almacenista…). Contacta también con las direcciones de entrega de la empresa del cliente. Registra las acciones comerciales con el cliente y las condiciones de venta y facturación. Muy práctico e intuitivo. También proveedores, agentes comerciales, empleados, acreedores y deudores.
+# stick-it-notes
+
+## How to download the project?
+
+Click on the clone/download button and download it as zip.
+
+Extract the zip by right clicking and extract it to your preferred location
+
+## How to run the project
+
+Double click index.html file.
